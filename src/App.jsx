@@ -6,8 +6,8 @@ import { createClient } from "@supabase/supabase-js";
    Remplacez ces deux valeurs par celles de votre projet Supabase
    (Settings → API dans le dashboard Supabase)
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL      = "VOTRE_URL_SUPABASE";   // ex: https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";       // ex: eyJhbGciOiJ...
+const SUPABASE_URL      = "https://ptpiddkrnxmbxqipkzbt.supabase.co";   // ex: https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0cGlkZGtybnhtYnhxaXBremJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDIyNTcsImV4cCI6MjA4NzcxODI1N30.VsZacJn97476yh-n28zt-R_9OM7gpqA60PYXikmX1eQ";       // ex: eyJhbGciOiJ...
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
