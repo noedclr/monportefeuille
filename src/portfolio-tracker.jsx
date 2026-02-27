@@ -6,8 +6,8 @@ import { createClient } from "@supabase/supabase-js";
    Remplacez ces deux valeurs par celles de votre projet Supabase
    (Settings → API dans le dashboard Supabase)
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL      = "https://ptpiddkrnxmbxqipkzbt.supabase.co";   // ex: https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0cGlkZGtybnhtYnhxaXBremJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDIyNTcsImV4cCI6MjA4NzcxODI1N30.VsZacJn97476yh-n28zt-R_9OM7gpqA60PYXikmX1eQ";       // ex: eyJhbGciOiJ...
+const SUPABASE_URL      = "VOTRE_URL_SUPABASE";   // ex: https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";       // ex: eyJhbGciOiJ...
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
@@ -453,16 +453,14 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 }
 
 /* ────────────────── HOOK MISE À JOUR PRIX (Yahoo Finance, sans clé API) ────────────────── */
-const CORS_PROXY = "https://corsproxy.io/?url=";
-
 async function fetchYahooPrice(ticker) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  const res = await fetch(CORS_PROXY + encodeURIComponent(url));
+  // Proxy Vercel pour éviter les erreurs CORS
+  const res = await fetch(`/api/price?ticker=${encodeURIComponent(ticker)}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-  if (!price || price <= 0) throw new Error("Ticker introuvable");
-  return Math.round(price * 100) / 100;
+  if (data.error) throw new Error(data.error);
+  if (!data.price || data.price <= 0) throw new Error("Ticker introuvable");
+  return data.price;
 }
 
 function isMarketOpen() {
