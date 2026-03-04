@@ -544,7 +544,7 @@ function usePriceRefresh(portfolio, setCurrentPrices) {
 }
 
 /* ────────────────── PORTEFEUILLE ────────────────── */
-function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadingIds, errors, refreshing, lastUpdate }) {
+function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadingIds, errors, isMobile, refreshing, lastUpdate }) {
   const [sortKey, setSortKey]         = useState("value");
   const [manualModal, setManualModal] = useState(null); // { name, currentPrice }
   const [manualInput, setManualInput] = useState("");
@@ -605,7 +605,55 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
         </div>
       )}
 
-      {/* Tableau */}
+      {/* Tableau desktop / cartes mobile */}
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {sorted.map(a => {
+            const isLoading = loadingIds.includes(a.id);
+            const isManual  = !a.ticker || a.manualMode;
+            return (
+              <div key={a.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "14px 16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, color: "#F9FAFB", fontSize: 15, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</div>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <Badge type={a.type} />
+                      {isManual
+                        ? <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 20, background: "rgba(139,92,246,0.15)", color: "#A78BFA" }}>✍️ Manuel</span>
+                        : <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#60A5FA", background: "#3B82F615", padding: "2px 6px", borderRadius: 6 }}>{a.ticker}</span>
+                      }
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: "#F9FAFB" }}>{fmtEur(a.value)}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: a.perf >= 0 ? "#10B981" : "#EF4444" }}>{fmtPct(a.perf)}</div>
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 2 }}>Qté</div>
+                    <div style={{ fontSize: 13, color: "#D1D5DB" }}>{fmt(a.qty, a.qty % 1 === 0 ? 0 : 2)}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 2 }}>PRU</div>
+                    <div style={{ fontSize: 13, color: "#9CA3AF" }}>{fmtEur(a.buyPrice)}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 2 }}>Prix actuel</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontSize: 13, color: "#D1D5DB" }}>{isLoading ? "..." : fmtEur(a.currentPrice)}</span>
+                      <button onClick={() => openManual(a)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, padding: 0, color: isManual ? "#A78BFA" : "#4B5563" }}>✏️</button>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 8, fontSize: 13, color: a.pnl >= 0 ? "#10B981" : "#EF4444", fontWeight: 600 }}>
+                  P&L : {a.pnl >= 0 ? "+" : ""}{fmtEur(a.pnl)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 8px" }}>
           <thead>
@@ -623,13 +671,9 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
               return (
                 <tr key={a.id} style={{ background: "rgba(255,255,255,0.03)", opacity: isLoading ? 0.6 : 1, transition: "opacity 0.3s" }}>
                   <td style={{ padding: "14px 12px", borderRadius: "12px 0 0 12px", color: "#F9FAFB", fontWeight: 500, whiteSpace: "nowrap" }}>{a.name}</td>
-
-                  {/* Mode : auto (ticker) ou manuel */}
                   <td style={{ padding: "14px 12px" }}>
                     {isManual ? (
-                      <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 20, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#A78BFA", whiteSpace: "nowrap" }}>
-                        ✍️ Manuel
-                      </span>
+                      <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 20, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#A78BFA", whiteSpace: "nowrap" }}>✍️ Manuel</span>
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                         <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: hasError ? "#F59E0B" : "#60A5FA", background: hasError ? "#F59E0B15" : "#3B82F615", padding: "2px 7px", borderRadius: 6 }}>{a.ticker}</span>
@@ -639,27 +683,15 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
                       </div>
                     )}
                   </td>
-
                   <td style={{ padding: "14px 12px" }}><Badge type={a.type} /></td>
                   <td style={{ padding: "14px 12px", color: "#D1D5DB" }}>{fmt(a.qty, a.qty % 1 === 0 ? 0 : 4)}</td>
                   <td style={{ padding: "14px 12px", color: "#9CA3AF" }}>{fmtEur(a.buyPrice)}</td>
-
-                  {/* Prix actuel — cliquable pour saisie manuelle */}
                   <td style={{ padding: "14px 12px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ color: "#D1D5DB", fontWeight: 500 }}>
-                        {isLoading ? <span style={{ color: "#6B7280" }}>...</span> : fmtEur(a.currentPrice)}
-                      </span>
-                      <button
-                        onClick={() => openManual(a)}
-                        title={isManual ? "Mettre à jour le prix" : "Saisir un prix manuel (override)"}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: isManual ? "#A78BFA" : "#4B5563", padding: 0, opacity: 0.8 }}
-                      >
-                        ✏️
-                      </button>
+                      <span style={{ color: "#D1D5DB", fontWeight: 500 }}>{isLoading ? <span style={{ color: "#6B7280" }}>...</span> : fmtEur(a.currentPrice)}</span>
+                      <button onClick={() => openManual(a)} title={isManual ? "Mettre à jour le prix" : "Saisir un prix manuel"} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: isManual ? "#A78BFA" : "#4B5563", padding: 0, opacity: 0.8 }}>✏️</button>
                     </div>
                   </td>
-
                   <td style={{ padding: "14px 12px", color: "#F9FAFB", fontWeight: 600 }}>{fmtEur(a.value)}</td>
                   <td style={{ padding: "14px 12px", color: a.pnl >= 0 ? "#10B981" : "#EF4444", fontWeight: 600 }}>{a.pnl >= 0 ? "+" : ""}{fmtEur(a.pnl)}</td>
                   <td style={{ padding: "14px 12px", borderRadius: "0 12px 12px 0", color: a.perf >= 0 ? "#10B981" : "#EF4444", fontWeight: 700 }}>{fmtPct(a.perf)}</td>
@@ -669,6 +701,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Modal saisie manuelle */}
       {manualModal && (
@@ -2502,6 +2535,12 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [dataLoaded, setDataLoaded]   = useState(false);
   const [tab, setTab] = useState("dashboard");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
 
   const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
   const [currentPrices, setCurrentPrices] = useState({});
@@ -2767,7 +2806,7 @@ export default function App() {
       <div style={{ position: "relative", zIndex: 1, display: "flex", minHeight: "100vh" }}>
 
         {/* ── SIDEBAR ── */}
-        <aside className="sidebar" style={{
+        {!isMobile && <aside className="sidebar" style={{
           flexShrink: 0,
           background: "rgba(7,11,20,0.97)",
           backdropFilter: "blur(20px)",
@@ -2852,7 +2891,7 @@ export default function App() {
               <span className="sidebar-label">Déconnexion</span>
             </button>
           </div>
-        </aside>
+        </aside>}
 
         {/* ── BOTTOM NAV MOBILE ── */}
         <nav className="bottom-nav" style={{ display: "none" }}>
@@ -2873,7 +2912,7 @@ export default function App() {
         </nav>
 
         {/* ── CONTENU PRINCIPAL ── */}
-        <div className="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <div className="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", marginLeft: isMobile ? 0 : undefined }}>
 
           {/* Topbar */}
           <div style={{
@@ -2931,7 +2970,7 @@ export default function App() {
 
           <main style={{ flex: 1, padding: "clamp(16px, 4vw, 32px)" }}>
             {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} />}
-            {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} />}
+            {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} isMobile={isMobile} />}
             {tab === "transactions" && <Transactions transactions={transactions} setTransactions={setTransactions} />}
             {tab === "epargne"      && <Epargne livrets={livrets} setLivrets={setLivrets} portfolio={portfolio} />}
             {tab === "budget"       && <Budget depenses={depenses} revenus={revenus} setRevenus={setRevenus} />}
