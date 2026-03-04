@@ -6,8 +6,8 @@ import { createClient } from "@supabase/supabase-js";
    Remplacez ces deux valeurs par celles de votre projet Supabase
    (Settings → API dans le dashboard Supabase)
    ────────────────────────────────────────────────────────────────────────── */
-const SUPABASE_URL      = "https://ptpiddkrnxmbxqipkzbt.supabase.co";   // ex: https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0cGlkZGtybnhtYnhxaXBremJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDIyNTcsImV4cCI6MjA4NzcxODI1N30.VsZacJn97476yh-n28zt-R_9OM7gpqA60PYXikmX1eQ";       // ex: eyJhbGciOiJ...
+const SUPABASE_URL      = "VOTRE_URL_SUPABASE";   // ex: https://xxxx.supabase.co
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";       // ex: eyJhbGciOiJ...
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
@@ -139,7 +139,7 @@ function Modal({ title, onClose, children }) {
     }}>
       <div style={{
         background: "#111827", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20,
-        padding: 32, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
+        padding: "clamp(16px, 4vw, 32px)", width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#F9FAFB", fontFamily: "'Syne', sans-serif" }}>{title}</div>
@@ -280,7 +280,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
       </div>
 
       {/* ── LIGNE 1 : graphique + objectifs ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24 }}>
 
         {/* Graphique évolution */}
         <div style={S.card}>
@@ -348,7 +348,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
       </div>
 
       {/* ── LIGNE 2 : budget mois + top performances + livrets ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
 
         {/* Budget ce mois */}
         <div style={S.card}>
@@ -852,7 +852,7 @@ function Transactions({ transactions, setTransactions }) {
       )}
 
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 16, marginBottom: 24 }}>
         <KpiCard label="Total achats" value={fmtEur(totalAchats)} sub={`${transactions.filter(t => t.type === "Achat").length} opérations`} />
         <KpiCard label="Total ventes" value={fmtEur(totalVentes)} sub={`${transactions.filter(t => t.type === "Vente").length} opérations`} />
         <KpiCard label="Total frais" value={fmtEur(transactions.reduce((s, t) => s + (t.fees || 0), 0))} sub="Tous courtiers" />
@@ -1133,7 +1133,7 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
       </div>
 
       {/* Score de santé + Profil */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 20, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 24 }}>
 
         {/* Score */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24, textAlign: "center" }}>
@@ -1343,14 +1343,14 @@ function Budget({ depenses, revenus, setRevenus }) {
       )}
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 28 }}>
         <KpiCard label="Revenus" value={fmtEur(totalRevenus)} sub="ce mois" positive={true} />
         <KpiCard label="Dépenses" value={fmtEur(totalDepenses)} sub="ce mois" positive={false} />
         <KpiCard label="Solde" value={fmtEur(solde)} sub={solde >= 0 ? "Bénéficiaire ✓" : "Déficitaire ✗"} positive={solde >= 0} />
         <KpiCard label="Taux d'épargne" value={totalRevenus > 0 ? `${(tauxEpargne * 100).toFixed(1)}%` : "—"} sub="du revenu net" positive={tauxEpargne >= 0.1} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
         {/* Revenus du mois */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>
@@ -1690,7 +1690,7 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
         <KpiCard label="Moyenne / dépense" value={filtered.length > 0 ? fmtEur(totalMois / filtered.length) : "—"} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
         {/* Barres de budget */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 20 }}>🎯 Suivi des budgets</div>
@@ -1999,14 +1999,14 @@ function Epargne({ livrets, setLivrets, portfolio }) {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 28 }}>
         <KpiCard label="Total livrets"     value={fmtEur(totalLivrets)}    sub={`${livrets.length} compte(s)`} positive={true} />
         <KpiCard label="Portefeuille"      value={fmtEur(totalBourse)}     sub="actions & ETFs" />
         <KpiCard label="Patrimoine total"  value={fmtEur(totalPatrimoine)} sub="livrets + bourse" positive={true} />
         <KpiCard label="Intérêts / an"     value={fmtEur(interetsAnnuels)} sub={`≈ ${fmtEur(interetsMensuels)}/mois`} positive={true} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
 
         {/* Répartition patrimoine */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
@@ -2245,7 +2245,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 28 }}>
         <KpiCard label="Objectifs définis"  value={objectifs.length}              sub="au total" />
         <KpiCard label="Objectifs atteints" value={atteints}                       sub={`sur ${objectifs.length}`} positive={atteints > 0} />
         <KpiCard label="Total à atteindre"  value={fmtEur(totalCibles)}           sub="somme des cibles" />
@@ -2680,94 +2680,81 @@ export default function App() {
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
         select option { background: #1F2937; }
 
+        /* ── SIDEBAR DESKTOP ── */
         .sidebar {
           width: 60px;
           transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
           overflow: hidden;
         }
-        .sidebar:hover {
-          width: 260px;
-        }
+        .sidebar:hover { width: 260px; }
         .sidebar-label {
-          opacity: 0;
-          white-space: nowrap;
-          transition: opacity 0.15s ease;
-          pointer-events: none;
+          opacity: 0; white-space: nowrap;
+          transition: opacity 0.15s ease; pointer-events: none;
         }
-        .sidebar:hover .sidebar-label {
-          opacity: 1;
-        }
+        .sidebar:hover .sidebar-label { opacity: 1; }
         .sidebar-kpi {
-          opacity: 0;
-          max-height: 0;
-          overflow: hidden;
+          opacity: 0; max-height: 0; overflow: hidden;
           transition: opacity 0.2s ease, max-height 0.25s ease;
         }
-        .sidebar:hover .sidebar-kpi {
-          opacity: 1;
-          max-height: 140px;
-        }
+        .sidebar:hover .sidebar-kpi { opacity: 1; max-height: 160px; }
         .sidebar-logo-text {
-          opacity: 0;
-          transition: opacity 0.2s ease 0.1s;
-          overflow: hidden;
-          white-space: nowrap;
-          min-width: 0;
-          flex-shrink: 1;
+          opacity: 0; transition: opacity 0.2s ease 0.1s;
+          overflow: hidden; white-space: nowrap; min-width: 0; flex-shrink: 1;
         }
-        .sidebar:hover .sidebar-logo-text {
-          opacity: 1;
-        }
+        .sidebar:hover .sidebar-logo-text { opacity: 1; }
         .main-content {
           margin-left: 60px;
           transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
         }
-        .sidebar:hover ~ .main-content {
-          margin-left: 260px;
-        }
+        .sidebar:hover ~ .main-content { margin-left: 260px; }
         .nav-btn {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 18px;
-          border-radius: 10px;
-          border: none;
-          cursor: pointer;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          margin-bottom: 2px;
-          text-align: left;
-          transition: all 0.15s;
-          border-left: 3px solid transparent;
+          width: 100%; display: flex; align-items: center; gap: 10px;
+          padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer;
+          font-family: 'DM Sans', sans-serif; font-size: 14px; margin-bottom: 2px;
+          text-align: left; transition: all 0.15s; border-left: 3px solid transparent;
         }
-        .nav-btn:hover {
-          background: rgba(255,255,255,0.06) !important;
-          color: #F9FAFB !important;
-        }
+        .nav-btn:hover { background: rgba(255,255,255,0.06) !important; color: #F9FAFB !important; }
         .sidebar-section {
-          opacity: 0;
-          transition: opacity 0.15s ease;
-          pointer-events: none;
-          font-size: 10px;
-          font-weight: 700;
-          color: #4B5563;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          padding: 20px 8px 6px 20px;
-          white-space: nowrap;
+          opacity: 0; transition: opacity 0.15s ease; pointer-events: none;
+          font-size: 10px; font-weight: 700; color: #4B5563;
+          text-transform: uppercase; letter-spacing: 0.1em;
+          padding: 20px 8px 6px 20px; white-space: nowrap;
         }
-        .sidebar:hover .sidebar-section {
-          opacity: 1;
-        }
+        .sidebar:hover .sidebar-section { opacity: 1; }
         .sidebar-divider {
-          height: 1px;
-          background: rgba(255,255,255,0.06);
-          margin: 8px 12px;
-          transition: margin 0.25s ease;
+          height: 1px; background: rgba(255,255,255,0.06);
+          margin: 8px 12px; transition: margin 0.25s ease;
         }
-        .sidebar:hover .sidebar-divider {
-          margin: 0;
+        .sidebar:hover .sidebar-divider { margin: 0; }
+
+        /* ── RESPONSIVE MOBILE ── */
+        @media (max-width: 768px) {
+          .sidebar { display: none !important; }
+          .main-content { margin-left: 0 !important; padding-bottom: 72px; }
+          .bottom-nav {
+            display: flex !important;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(7,11,20,0.97); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom)) 0;
+          }
+          .topbar-market { display: none !important; }
+          .topbar-time   { display: none !important; }
+          .topbar-refresh span:last-child { display: none; }
+          .responsive-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+          .responsive-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+          .responsive-grid-2-1 { grid-template-columns: 1fr !important; }
+          .responsive-grid-3cols { grid-template-columns: 1fr !important; }
+          .hero-kpis { grid-template-columns: repeat(2, 1fr) !important; }
+          .hero-amount { font-size: clamp(28px, 8vw, 52px) !important; }
+          .page-padding { padding: 16px !important; }
+          .topbar-padding { padding: 0 16px !important; }
+          .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .hide-mobile { display: none !important; }
+          .card-mobile { padding: 16px !important; }
+        }
+        @media (min-width: 769px) {
+          .bottom-nav { display: none !important; }
         }
       `}</style>
 
@@ -2867,6 +2854,24 @@ export default function App() {
           </div>
         </aside>
 
+        {/* ── BOTTOM NAV MOBILE ── */}
+        <nav className="bottom-nav" style={{ display: "none" }}>
+          {NAV.filter(n => n.type === "item").map(item => {
+            const active = tab === item.id;
+            return (
+              <button key={item.id} onClick={() => setTab(item.id)} style={{
+                flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 3, padding: "6px 0", background: "none", border: "none",
+                color: active ? "#3B82F6" : "#6B7280", cursor: "pointer", fontSize: 10,
+                fontFamily: "'DM Sans', sans-serif", fontWeight: active ? 600 : 400,
+              }}>
+                <span style={{ fontSize: 20 }}>{item.icon}</span>
+                <span style={{ fontSize: 9, whiteSpace: "nowrap" }}>{item.label.split(" ")[0]}</span>
+              </button>
+            );
+          })}
+        </nav>
+
         {/* ── CONTENU PRINCIPAL ── */}
         <div className="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
 
@@ -2884,7 +2889,7 @@ export default function App() {
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {/* Badge marché ouvert/fermé */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: isMarketOpen() ? "rgba(16,185,129,0.1)" : "rgba(107,114,128,0.1)", border: `1px solid ${isMarketOpen() ? "rgba(16,185,129,0.3)" : "rgba(107,114,128,0.2)"}` }}>
+              <div className="topbar-market" style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: isMarketOpen() ? "rgba(16,185,129,0.1)" : "rgba(107,114,128,0.1)", border: `1px solid ${isMarketOpen() ? "rgba(16,185,129,0.3)" : "rgba(107,114,128,0.2)"}` }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: isMarketOpen() ? "#10B981" : "#6B7280", boxShadow: isMarketOpen() ? "0 0 6px #10B981" : "none" }} />
                 <span style={{ fontSize: 11, fontWeight: 600, color: isMarketOpen() ? "#10B981" : "#6B7280" }}>
                   {isMarketOpen() ? "Marché ouvert" : "Marché fermé"}
@@ -2893,16 +2898,16 @@ export default function App() {
 
               {/* Dernière mise à jour */}
               {lastUpdate && (
-                <span style={{ fontSize: 12, color: "#6B7280" }}>
+                <span className="topbar-time" style={{ fontSize: 12, color: "#6B7280" }}>
                   Cours : {lastUpdate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
               )}
               {!lastUpdate && (
-                <span style={{ fontSize: 12, color: "#6B7280" }}>Chargement des cours...</span>
+                <span className="topbar-time" style={{ fontSize: 12, color: "#6B7280" }}>Chargement des cours...</span>
               )}
 
               {/* Bouton refresh */}
-              <button
+              <button className="topbar-refresh"
                 onClick={() => refreshAll(false)}
                 disabled={refreshing}
                 style={{
@@ -2914,7 +2919,7 @@ export default function App() {
                 }}
               >
                 <span style={{ display: "inline-block", animation: refreshing ? "spin 1s linear infinite" : "none", fontSize: 14 }}>↻</span>
-                {refreshing ? "Mise à jour..." : "Actualiser"}
+                <span>{refreshing ? "Mise à jour..." : "Actualiser"}</span>
               </button>
             </div>
           </div>
@@ -2924,7 +2929,7 @@ export default function App() {
             @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
           `}</style>
 
-          <main style={{ flex: 1, padding: "32px" }}>
+          <main style={{ flex: 1, padding: "clamp(16px, 4vw, 32px)" }}>
             {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} />}
             {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} />}
             {tab === "transactions" && <Transactions transactions={transactions} setTransactions={setTransactions} />}
@@ -2940,7 +2945,7 @@ export default function App() {
       {/* Modal sauvegarde */}
       {showBackupModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowBackupModal(false)}>
-          <div style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 32, width: 480, maxWidth: "90vw" }} onClick={e => e.stopPropagation()}>
+          <div style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "clamp(16px,4vw,32px)", width: 480, maxWidth: "92vw" }} onClick={e => e.stopPropagation()}>
             <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F9FAFB", marginBottom: 8 }}>💾 Sauvegarde des données</div>
             <p style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 24, lineHeight: 1.6 }}>Vos données sont stockées dans votre navigateur. Exportez-les régulièrement pour éviter toute perte.</p>
             {backupSuccess && <div style={{ background: "#10B98120", border: "1px solid #10B98140", borderRadius: 10, padding: 12, marginBottom: 16, color: "#10B981", fontSize: 14, textAlign: "center" }}>{backupSuccess}</div>}
