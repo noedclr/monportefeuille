@@ -2910,7 +2910,7 @@ export default function App() {
         </nav>
 
         {/* ── CONTENU PRINCIPAL ── */}
-        <div style={{ marginLeft: isMobile ? 0 : 60, minHeight: "100vh", display: "flex", flexDirection: "column", transition: "margin-left 0.25s ease" }}>
+        <div style={{ marginLeft: isMobile ? 0 : 60, minHeight: "100vh", display: "flex", flexDirection: "column", transition: "margin-left 0.25s ease", width: isMobile ? "100%" : "calc(100vw - 60px)" }}>
 
           {/* Topbar */}
           <div style={{
