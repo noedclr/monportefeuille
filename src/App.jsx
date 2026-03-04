@@ -2803,7 +2803,7 @@ export default function App() {
         <div style={{ position: "absolute", bottom: -200, right: -200, width: 600, height: 600, background: "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)" }} />
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, display: "flex", minHeight: "100vh" }}>
+      <div style={{ position: "relative", zIndex: 1, display: "flex", minHeight: "100vh", width: "100%" }}>
 
         {/* ── SIDEBAR ── */}
         {!isMobile && <aside className="sidebar" style={{
@@ -2912,7 +2912,7 @@ export default function App() {
         </nav>
 
         {/* ── CONTENU PRINCIPAL ── */}
-        <div className="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", marginLeft: isMobile ? 0 : undefined }}>
+        <div className="main-content" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: "100vh", marginLeft: isMobile ? 0 : 60, width: isMobile ? "100%" : "calc(100% - 60px)" }}>
 
           {/* Topbar */}
           <div style={{
