@@ -2742,10 +2742,8 @@ export default function App() {
         }
         .sidebar:hover .sidebar-logo-text { opacity: 1; }
         .main-content {
-          margin-left: 60px;
           transition: margin-left 0.25s cubic-bezier(0.4,0,0.2,1);
         }
-        .sidebar:hover ~ .main-content { margin-left: 260px; }
         .nav-btn {
           width: 100%; display: flex; align-items: center; gap: 10px;
           padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer;
@@ -2912,7 +2910,7 @@ export default function App() {
         </nav>
 
         {/* ── CONTENU PRINCIPAL ── */}
-        <div className="main-content" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: "100vh", marginLeft: isMobile ? 0 : 60, width: isMobile ? "100%" : "calc(100% - 60px)" }}>
+        <div className="main-content" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: "100vh", marginLeft: isMobile ? 0 : 60, transition: "margin-left 0.25s ease" }}>
 
           {/* Topbar */}
           <div style={{
