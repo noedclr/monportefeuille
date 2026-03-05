@@ -1596,8 +1596,12 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
             <div>
               <div style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 12, padding: 16, marginBottom: 20, fontSize: 13, color: "#93C5FD", lineHeight: 1.6 }}>
                 <strong style={{ color: "#60A5FA" }}>Comment exporter votre relevé CSV ?</strong><br />
-                <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
-                <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
+                • <strong>BNP / Hello Bank</strong> : Mes comptes → Télécharger → CSV<br />
+                • <strong>Crédit Agricole</strong> : Mes comptes → Exporter → CSV<br />
+                • <strong>Boursorama</strong> : Compte → Télécharger les opérations → CSV<br />
+                • <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
+                • <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
+                • <strong>La plupart des banques</strong> : cherchez "export" ou "télécharger" dans votre espace client
               </div>
               {importError && <div style={{ color: "#F87171", fontSize: 13, marginBottom: 12 }}>⚠️ {importError}</div>}
               <Btn onClick={() => fileInputBudgetRef.current?.click()} style={{ width: "100%" }}>📁 Choisir un fichier CSV</Btn>
@@ -2018,6 +2022,8 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                 • <strong>BNP / Hello Bank</strong> : Mes comptes → Télécharger → CSV<br />
                 • <strong>Crédit Agricole</strong> : Mes comptes → Exporter → CSV<br />
                 • <strong>Boursorama</strong> : Compte → Télécharger les opérations → CSV<br />
+                • <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
+                • <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
                 • <strong>La plupart des banques</strong> : cherchez "export" ou "télécharger" dans votre espace client
               </div>
               {importError && (
