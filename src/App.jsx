@@ -1300,10 +1300,104 @@ const REVENUE_CATEGORIES = [
   { id: "autres_rev",  label: "Autres revenus",     emoji: "💰", color: "#6B7280" },
 ];
 
-function Budget({ depenses, revenus, setRevenus }) {
+function Budget({ depenses, revenus, setRevenus, setDepenses }) {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ date: new Date().toISOString().slice(0,7) + "-01", label: "", categorie: "salaire", montant: "", note: "", recurrent: true });
   const [filterMonth, setFilterMonth] = useState(new Date().toISOString().slice(0,7));
+
+  // Import CSV (réutilise la logique de Depenses)
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importStep, setImportStep]         = useState("upload");
+  const [importDepenses, setImportDepenses] = useState([]);
+  const [importRevenus, setImportRevenus]   = useState([]);
+  const [selectedDep, setSelectedDep]       = useState({});
+  const [selectedRev, setSelectedRev]       = useState({});
+  const [importPreviewTab, setImportPreviewTab] = useState("depenses");
+  const [importError, setImportError]       = useState("");
+  const fileInputBudgetRef = useRef(null);
+
+  const categorizeDepenseBudget = (label) => {
+    const l = label.toLowerCase();
+    if (/loyer|habitation|fonciere|syndic|agence immo|charges|eau |edf|engie|gaz |electricit|pret int|ech pret/.test(l)) return "logement";
+    if (/intermarche|carrefour|leclerc|lidl|aldi|monoprix|casino |franprix|super u|auchan|picard|biocoop|fresh |epicerie|supermarche|courses/.test(l)) return "alimentation";
+    if (/sncf|navigo|ratp|bus |tram |metro|parking|essence|total |esso|bp |shell|autoroute|peage|uber|blablacar|ouigo|taxi|petroest/.test(l)) return "transport";
+    if (/pharmacie|medecin|docteur|hopital|clinique|dentiste|mutuelle|secu|cpam|ameli|optique|kiné/.test(l)) return "sante";
+    if (/netflix|spotify|disney|canal\+|deezer|twitch|steam|playstation|xbox|cinema|theatre|concert|loisir|vacances|airbnb|booking|hotel/.test(l)) return "loisirs";
+    if (/restaurant|brasserie|bistro|pizza|burger|sushi|kebab|mcdonald|kfc|quick|paul |subway|starbucks|cafe |bar |boulangerie|punto/.test(l)) return "restaurants";
+    if (/zara|h&m|primark|uniqlo|nike|adidas|decathlon|kiabi|vetement|chaussure|zalando|asos|aska/.test(l)) return "vetements";
+    if (/sfr|orange|bouygues telecom|free |apple\.com|google|microsoft|amazon|abonnement|openai|chatgpt|prlv sepa|ume/.test(l)) return "abonnements";
+    if (/livret|epargne|assurance.?vie|trade republic|bourse|invest/.test(l)) return "epargne";
+    return "autres";
+  };
+  const categorizeRevenuBudget = (label) => {
+    const l = label.toLowerCase();
+    if (/salaire|paie|virement employeur|soc |sa |sas |sarl/.test(l)) return "salaire";
+    if (/freelance|facture|prestation|mission|client/.test(l)) return "freelance";
+    if (/dividende|coupon|interet|interest/.test(l)) return "dividendes";
+    if (/loyer|quittance|locataire/.test(l)) return "loyer_recu";
+    if (/caf|apl|aide|alloc|prime activite|rsa|pole emploi|cpam|remboursement|secu|ameli/.test(l)) return "aides";
+    return "autres_rev";
+  };
+  const parseCSVBudget = (text) => {
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return { depenses: [], revenus: [] };
+    const sep = lines[0].includes(";") ? ";" : lines[0].includes(",") ? "," : "\t";
+    const headers = lines[0].split(sep).map(h => h.replace(/['"]/g, "").trim().toLowerCase());
+    const iDate   = headers.findIndex(h => h.includes("date") && !h.includes("valeur"));
+    const iLabel  = headers.findIndex(h => /libellé|label|opération|description|intitulé/.test(h));
+    const iDebit  = headers.findIndex(h => /débit|debit/.test(h));
+    const iCredit = headers.findIndex(h => /crédit|credit/.test(h));
+    const iMontant = headers.findIndex(h => h === "montant" || h === "amount");
+    const deps = [], revs = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(sep).map(c => c.replace(/['"]/g, "").trim());
+      if (cols.length < 2) continue;
+      const rawDate  = cols[iDate]  ?? cols[0];
+      const rawLabel = cols[iLabel] ?? cols[2] ?? "";
+      const rawDebit  = iDebit  >= 0 ? cols[iDebit]  : "";
+      const rawCredit = iCredit >= 0 ? cols[iCredit] : "";
+      const rawMontant = iMontant >= 0 ? cols[iMontant] : "";
+      const montantDebit  = parseFloat(rawDebit.replace(/\s/g,"").replace(",","."))  || 0;
+      const montantCredit = parseFloat(rawCredit.replace(/\s/g,"").replace(",",".")) || 0;
+      const montantNet    = parseFloat(rawMontant.replace(/\s/g,"").replace(",","."))|| 0;
+      let date = rawDate;
+      const dmyMatch = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (dmyMatch) date = `${dmyMatch[3]}-${dmyMatch[2]}-${dmyMatch[1]}`;
+      const labelUp = rawLabel.toUpperCase();
+      if (/SOLDE|RELEVE/.test(labelUp)) continue;
+      const label = rawLabel.replace(/PAIEMENT (PSC|CB) /i,"").replace(/CARTE \d+/i,"").replace(/VIR INST /i,"").replace(/VIR SEPA /i,"").replace(/PRLV SEPA /i,"").trim();
+      if (montantDebit > 0) deps.push({ id: `dep_${Date.now()}_${i}`, date, label: label||rawLabel, montant: montantDebit, categorie: categorizeDepenseBudget(label||rawLabel) });
+      else if (montantCredit > 0) revs.push({ id: `rev_${Date.now()}_${i}`, date, label: label||rawLabel, montant: montantCredit, categorie: categorizeRevenuBudget(label||rawLabel), recurrent: false });
+      else if (montantNet !== 0) {
+        if (montantNet > 0) revs.push({ id: `rev_${Date.now()}_${i}`, date, label: label||rawLabel, montant: montantNet, categorie: categorizeRevenuBudget(label||rawLabel), recurrent: false });
+        else deps.push({ id: `dep_${Date.now()}_${i}`, date, label: label||rawLabel, montant: Math.abs(montantNet), categorie: categorizeDepenseBudget(label||rawLabel) });
+      }
+    }
+    return { depenses: deps, revenus: revs };
+  };
+  const handleFileBudget = async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    setImportError(""); setImportStep("analyzing");
+    try {
+      const text = await file.text();
+      const { depenses: deps, revenus: revs } = parseCSVBudget(text);
+      if (deps.length === 0 && revs.length === 0) { setImportError("Aucune opération détectée."); setImportStep("upload"); return; }
+      setImportDepenses(deps); setImportRevenus(revs);
+      setSelectedDep(Object.fromEntries(deps.map(r => [r.id, true])));
+      setSelectedRev(Object.fromEntries(revs.map(r => [r.id, true])));
+      setImportPreviewTab(deps.length > 0 ? "depenses" : "revenus");
+      setImportStep("preview");
+    } catch { setImportError("Erreur de lecture."); setImportStep("upload"); }
+    e.target.value = "";
+  };
+  const confirmImportBudget = () => {
+    const depsToAdd = importDepenses.filter(r => selectedDep[r.id]).map(r => ({ ...r, id: Date.now()+Math.random(), note: "Importé CSV" }));
+    const revsToAdd = importRevenus.filter(r => selectedRev[r.id]).map(r => ({ ...r, id: Date.now()+Math.random(), note: "Importé CSV" }));
+    if (depsToAdd.length > 0) setDepenses(d => [...d, ...depsToAdd]);
+    if (revsToAdd.length > 0) setRevenus(rv => [...rv, ...revsToAdd]);
+    setImportStep("done");
+    setTimeout(() => { setShowImportModal(false); setImportStep("upload"); setImportDepenses([]); setImportRevenus([]); }, 1800);
+  };
 
   const saveRevenu = () => {
     setRevenus(r => [...r, { ...form, id: Date.now(), montant: parseFloat(form.montant), date: filterMonth + "-01" }]);
@@ -1360,6 +1454,7 @@ function Budget({ depenses, revenus, setRevenus }) {
           <Select label="" value={filterMonth} onChange={e => setFilterMonth(e.target.value)} style={{ marginBottom: 0, width: 180 }}>
             {allMonths.map(m => <option key={m} value={m}>{new Date(m + "-02").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</option>)}
           </Select>
+          <Btn variant="ghost" onClick={() => { setImportStep("upload"); setImportDepenses([]); setImportRevenus([]); setImportError(""); setShowImportModal(true); }}>📂 Importer relevé</Btn>
           <Btn onClick={() => { setForm({ date: filterMonth + "-01", label: "", categorie: "salaire", montant: "", note: "", recurrent: true }); setShowModal(true); }}>+ Revenu</Btn>
         </div>
       </div>
@@ -1490,6 +1585,61 @@ function Budget({ depenses, revenus, setRevenus }) {
             <Btn variant="ghost" onClick={() => setShowModal(false)} style={{ flex: 1 }}>Annuler</Btn>
             <Btn onClick={saveRevenu} style={{ flex: 1 }} disabled={!form.label || !form.montant}>Enregistrer</Btn>
           </div>
+        </Modal>
+      )}
+
+      {/* Modal import relevé */}
+      <input ref={fileInputBudgetRef} type="file" accept=".csv,.txt" onChange={handleFileBudget} style={{ display: "none" }} />
+      {showImportModal && (
+        <Modal title="📂 Importer un relevé bancaire" onClose={() => { setShowImportModal(false); setImportStep("upload"); setImportDepenses([]); setImportRevenus([]); }}>
+          {importStep === "upload" && (
+            <div>
+              <div style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 12, padding: 16, marginBottom: 20, fontSize: 13, color: "#93C5FD", lineHeight: 1.6 }}>
+                <strong style={{ color: "#60A5FA" }}>Comment exporter votre relevé CSV ?</strong><br />
+                <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
+                <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
+              </div>
+              {importError && <div style={{ color: "#F87171", fontSize: 13, marginBottom: 12 }}>⚠️ {importError}</div>}
+              <Btn onClick={() => fileInputBudgetRef.current?.click()} style={{ width: "100%" }}>📁 Choisir un fichier CSV</Btn>
+            </div>
+          )}
+          {importStep === "analyzing" && <div style={{ textAlign: "center", padding: 32, color: "#9CA3AF" }}>⏳ Analyse du relevé...</div>}
+          {importStep === "preview" && (
+            <div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                <Btn variant={importPreviewTab === "depenses" ? "primary" : "ghost"} onClick={() => setImportPreviewTab("depenses")} style={{ flex: 1, padding: "8px 0", fontSize: 13 }}>
+                  💸 Dépenses ({importDepenses.length})
+                </Btn>
+                <Btn variant={importPreviewTab === "revenus" ? "primary" : "ghost"} onClick={() => setImportPreviewTab("revenus")} style={{ flex: 1, padding: "8px 0", fontSize: 13 }}>
+                  💼 Revenus ({importRevenus.length})
+                </Btn>
+              </div>
+              <div style={{ maxHeight: 280, overflowY: "auto", marginBottom: 16 }}>
+                {(importPreviewTab === "depenses" ? importDepenses : importRevenus).map(item => (
+                  <div key={item.id} onClick={() => {
+                    if (importPreviewTab === "depenses") setSelectedDep(s => ({ ...s, [item.id]: !s[item.id] }));
+                    else setSelectedRev(s => ({ ...s, [item.id]: !s[item.id] }));
+                  }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, marginBottom: 4, background: (importPreviewTab === "depenses" ? selectedDep[item.id] : selectedRev[item.id]) ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", cursor: "pointer" }}>
+                    <input type="checkbox" checked={!!(importPreviewTab === "depenses" ? selectedDep[item.id] : selectedRev[item.id])} onChange={() => {}} style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, color: "#F9FAFB", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
+                      <div style={{ fontSize: 11, color: "#6B7280" }}>{item.date}</div>
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: importPreviewTab === "depenses" ? "#F87171" : "#34D399", flexShrink: 0 }}>
+                      {importPreviewTab === "depenses" ? "-" : "+"}{fmtEur(item.montant)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <Btn variant="ghost" onClick={() => { setImportStep("upload"); setImportDepenses([]); setImportRevenus([]); }} style={{ flex: 1 }}>← Retour</Btn>
+                <Btn onClick={confirmImportBudget} style={{ flex: 1 }}>
+                  ✓ Importer ({Object.values(selectedDep).filter(Boolean).length + Object.values(selectedRev).filter(Boolean).length} opérations)
+                </Btn>
+              </div>
+            </div>
+          )}
+          {importStep === "done" && <div style={{ textAlign: "center", padding: 32, color: "#10B981", fontSize: 16 }}>✅ Import réussi !</div>}
         </Modal>
       )}
     </div>
@@ -2451,6 +2601,106 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
   );
 }
 
+/* ────────────────── MODAL SUGGESTIONS ────────────────── */
+function SuggestionModal({ user, onClose }) {
+  const [texte, setTexte]     = useState("");
+  const [categorie, setCat]   = useState("amelioration");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone]       = useState(false);
+  const [error, setError]     = useState("");
+
+  const CATS = [
+    { id: "amelioration", label: "💡 Amélioration", desc: "Une fonctionnalité existante à améliorer" },
+    { id: "nouvelle_fonction", label: "✨ Nouvelle fonction", desc: "Une idée de nouvelle fonctionnalité" },
+    { id: "bug", label: "🐛 Bug", desc: "Quelque chose qui ne fonctionne pas" },
+    { id: "autre", label: "💬 Autre", desc: "Autre type de retour" },
+  ];
+
+  const submit = async () => {
+    if (!texte.trim()) return;
+    setLoading(true); setError("");
+    try {
+      const { error: err } = await supabase.from("suggestions").insert({
+        user_id: user?.id ?? null,
+        user_email: user?.email ?? "anonyme",
+        categorie,
+        texte: texte.trim(),
+        created_at: new Date().toISOString(),
+        statut: "nouveau",
+      });
+      if (err) throw err;
+      setDone(true);
+      setTimeout(onClose, 2500);
+    } catch (e) {
+      setError("Erreur lors de l'envoi. Veuillez réessayer.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <Modal title="💡 Proposer une amélioration" onClose={onClose}>
+      {done ? (
+        <div style={{ textAlign: "center", padding: "32px 0" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#F9FAFB", marginBottom: 8 }}>Merci pour votre suggestion !</div>
+          <div style={{ color: "#9CA3AF", fontSize: 14 }}>Votre retour a bien été enregistré et sera examiné prochainement.</div>
+        </div>
+      ) : (
+        <div>
+          <p style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 20, lineHeight: 1.6 }}>
+            Votre avis compte ! Partagez vos idées pour améliorer MonPortefeuille.
+          </p>
+
+          {/* Catégorie */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 8 }}>Type de retour</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {CATS.map(c => (
+                <div key={c.id} onClick={() => setCat(c.id)} style={{
+                  padding: "10px 14px", borderRadius: 10, cursor: "pointer",
+                  background: categorie === c.id ? "rgba(59,130,246,0.15)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${categorie === c.id ? "rgba(59,130,246,0.4)" : "rgba(255,255,255,0.08)"}`,
+                  transition: "all 0.15s",
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: categorie === c.id ? 600 : 400, color: categorie === c.id ? "#60A5FA" : "#F9FAFB" }}>{c.label}</div>
+                  <div style={{ fontSize: 11, color: "#6B7280", marginTop: 2 }}>{c.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Texte */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 8 }}>Votre suggestion</label>
+            <textarea
+              value={texte}
+              onChange={e => setTexte(e.target.value)}
+              placeholder="Décrivez votre idée ou le problème rencontré..."
+              rows={5}
+              style={{
+                width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14,
+                outline: "none", resize: "vertical", fontFamily: "'DM Sans', sans-serif",
+                lineHeight: 1.5,
+              }}
+            />
+            <div style={{ fontSize: 11, color: "#4B5563", marginTop: 4 }}>{texte.length} / 1000 caractères</div>
+          </div>
+
+          {error && <div style={{ fontSize: 13, color: "#F87171", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>⚠️ {error}</div>}
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <Btn variant="ghost" onClick={onClose} style={{ flex: 1 }}>Annuler</Btn>
+            <Btn onClick={submit} disabled={loading || !texte.trim() || texte.length > 1000} style={{ flex: 1 }}>
+              {loading ? "Envoi..." : "✉️ Envoyer"}
+            </Btn>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
 /* ────────────────── PAGE AUTHENTIFICATION ────────────────── */
 function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
   const [mode, setMode]         = useState(recovery ? "newpassword" : "login");
@@ -2657,6 +2907,7 @@ export default function App() {
   const { refreshing, loadingIds, lastUpdate, errors, autoStatus, refreshAll, refreshOne } = usePriceRefresh(portfolio, setCurrentPrices);
 
   const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [importBackupError, setImportBackupError] = useState("");
   const [backupSuccess, setBackupSuccess] = useState("");
   const backupInputRef = useRef(null);
@@ -2918,6 +3169,10 @@ export default function App() {
               <span style={{ fontSize: 18, flexShrink: 0 }}>💾</span>
               <span className="sidebar-label">Sauvegarder / Importer</span>
             </button>
+            <button onClick={() => setShowSuggestionModal(true)} className="nav-btn" style={{ background: "rgba(59,130,246,0.06)", color: "#60A5FA", border: "1px solid rgba(59,130,246,0.15)" }}>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>💡</span>
+              <span className="sidebar-label">Suggérer une amélioration</span>
+            </button>
             <button onClick={() => supabase.auth.signOut()} className="nav-btn" style={{ background: "rgba(239,68,68,0.06)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.15)" }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>🚪</span>
               <span className="sidebar-label">Déconnexion</span>
@@ -2978,6 +3233,13 @@ export default function App() {
               )}
 
               {/* Bouton refresh */}
+              {isMobile && (
+                <button onClick={() => setShowSuggestionModal(true)} style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: 34, height: 34, borderRadius: 8, border: "1px solid rgba(59,130,246,0.3)",
+                  background: "rgba(59,130,246,0.08)", color: "#60A5FA", cursor: "pointer", fontSize: 16,
+                }}>💡</button>
+              )}
               <button className="topbar-refresh"
                 onClick={() => refreshAll(false)}
                 disabled={refreshing}
@@ -3005,13 +3267,16 @@ export default function App() {
             {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} isMobile={isMobile} />}
             {tab === "transactions" && <Transactions transactions={transactions} setTransactions={setTransactions} />}
             {tab === "epargne"      && <Epargne livrets={livrets} setLivrets={setLivrets} portfolio={portfolio} />}
-            {tab === "budget"       && <Budget depenses={depenses} revenus={revenus} setRevenus={setRevenus} />}
+            {tab === "budget"       && <Budget depenses={depenses} revenus={revenus} setRevenus={setRevenus} setDepenses={setDepenses} />}
             {tab === "depenses"     && <Depenses depenses={depenses} setDepenses={setDepenses} budgets={budgets} setBudgets={setBudgets} setRevenus={setRevenus} />}
             {tab === "objectifs"    && <Objectifs objectifs={objectifs} setObjectifs={setObjectifs} depenses={depenses} revenus={revenus} portfolio={portfolio} livrets={livrets} />}
             {tab === "ai"           && <Recommendations portfolio={portfolio} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} />}
           </main>
         </div>
       </div>
+
+      {/* Modal suggestion */}
+      {showSuggestionModal && <SuggestionModal user={user} onClose={() => setShowSuggestionModal(false)} />}
 
       {/* Modal sauvegarde */}
       {showBackupModal && (
