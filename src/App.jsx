@@ -2798,7 +2798,7 @@ export default function App() {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
-  const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
+  const [transactions, setTransactions] = useState([]);
   const [currentPrices, setCurrentPrices] = useState({});
   const [depenses, setDepenses] = useState([]);
   const [budgets, setBudgets]   = useState(INITIAL_BUDGETS);
