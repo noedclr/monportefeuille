@@ -2452,12 +2452,8 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
 }
 
 /* ────────────────── PAGE AUTHENTIFICATION ────────────────── */
-function AuthPage() {
-  // Détecter si on arrive depuis un lien de reset mot de passe
-  const isRecovery = window.location.hash.includes("type=recovery") ||
-                     new URLSearchParams(window.location.search).get("type") === "recovery";
-
-  const [mode, setMode]         = useState(isRecovery ? "newpassword" : "login");
+function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
+  const [mode, setMode]         = useState(recovery ? "newpassword" : "login");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -2484,8 +2480,8 @@ function AuthPage() {
       } else if (mode === "newpassword") {
         const { error } = await supabase.auth.updateUser({ password: newPassword });
         if (error) throw error;
-        setSuccess("Mot de passe mis à jour ! Vous pouvez vous connecter.");
-        setTimeout(() => { window.location.hash = ""; setMode("login"); }, 2000);
+        setSuccess("Mot de passe mis à jour ! Vous allez être redirigé...");
+        setTimeout(() => { onPasswordUpdated(); }, 2000);
       }
     } catch (e) { setError(e.message || "Une erreur est survenue"); }
     setLoading(false);
@@ -2565,6 +2561,7 @@ export default function App() {
   const [user, setUser]               = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [dataLoaded, setDataLoaded]   = useState(false);
+  const [isRecovery, setIsRecovery]   = useState(false);
   const [tab, setTab] = useState("dashboard");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
@@ -2588,9 +2585,15 @@ export default function App() {
       setUser(session?.user ?? null);
       setAuthLoading(false);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecovery(true);
+        setUser(session?.user ?? null);
+        setAuthLoading(false);
+        return;
+      }
       setUser(session?.user ?? null);
-      if (!session) setDataLoaded(false);
+      if (!session) { setDataLoaded(false); setIsRecovery(false); }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -2667,7 +2670,7 @@ export default function App() {
       </div>
     </div>
   );
-  if (!user) return <AuthPage />;
+  if (!user || isRecovery) return <AuthPage recovery={isRecovery} onPasswordUpdated={() => setIsRecovery(false)} />;
   if (!dataLoaded) return (
     <div style={{ minHeight: "100vh", background: "#070B14", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center" }}>
