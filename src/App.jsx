@@ -2453,9 +2453,14 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
 
 /* ────────────────── PAGE AUTHENTIFICATION ────────────────── */
 function AuthPage() {
-  const [mode, setMode]         = useState("login"); // "login" | "register" | "reset"
+  // Détecter si on arrive depuis un lien de reset mot de passe
+  const isRecovery = window.location.hash.includes("type=recovery") ||
+                     new URLSearchParams(window.location.search).get("type") === "recovery";
+
+  const [mode, setMode]         = useState(isRecovery ? "newpassword" : "login");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
   const [success, setSuccess]   = useState("");
@@ -2470,10 +2475,17 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         setSuccess("Compte créé ! Vérifiez votre boîte mail pour confirmer votre adresse.");
-      } else {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+      } else if (mode === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: "https://monportefeuille-sigma.vercel.app",
+        });
         if (error) throw error;
-        setSuccess("Email de réinitialisation envoyé !");
+        setSuccess("Email envoyé ! Vérifiez votre boîte mail.");
+      } else if (mode === "newpassword") {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+        setSuccess("Mot de passe mis à jour ! Vous pouvez vous connecter.");
+        setTimeout(() => { window.location.hash = ""; setMode("login"); }, 2000);
       }
     } catch (e) { setError(e.message || "Une erreur est survenue"); }
     setLoading(false);
@@ -2495,32 +2507,51 @@ function AuthPage() {
         </div>
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: 32 }}>
           <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F9FAFB", marginBottom: 24 }}>
-            {mode === "login" ? "Connexion" : mode === "register" ? "Créer un compte" : "Mot de passe oublié"}
+            {mode === "login" ? "Connexion" : mode === "register" ? "Créer un compte" : mode === "reset" ? "Mot de passe oublié" : "Nouveau mot de passe"}
           </h2>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Adresse e-mail</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="vous@exemple.fr"
-              style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
-          </div>
-          {mode !== "reset" && (
+
+          {/* Champ email — pas affiché pour newpassword */}
+          {mode !== "newpassword" && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Adresse e-mail</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="vous@exemple.fr"
+                style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
+            </div>
+          )}
+
+          {/* Mot de passe — login et register */}
+          {(mode === "login" || mode === "register") && (
             <div style={{ marginBottom: 24 }}>
               <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Mot de passe</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="••••••••"
                 style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
             </div>
           )}
+
+          {/* Nouveau mot de passe */}
+          {mode === "newpassword" && (
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Nouveau mot de passe</label>
+              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="Minimum 6 caractères"
+                style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
+            </div>
+          )}
+
           {error   && <div style={{ fontSize: 13, color: "#F87171", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>⚠️ {error}</div>}
           {success && <div style={{ fontSize: 13, color: "#34D399", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: 8, padding: "10px 14px", marginBottom: 16 }}>✅ {success}</div>}
-          <button onClick={handle} disabled={loading || !email || (mode !== "reset" && !password)}
+
+          <button onClick={handle}
+            disabled={loading || (mode === "newpassword" ? !newPassword : (!email || (mode !== "reset" && !password)))}
             style={{ width: "100%", padding: "13px 0", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #3B82F6, #2563EB)", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", marginBottom: 20, opacity: loading ? 0.6 : 1 }}>
-            {loading ? "Chargement..." : mode === "login" ? "Se connecter" : mode === "register" ? "Créer mon compte" : "Envoyer le lien"}
+            {loading ? "Chargement..." : mode === "login" ? "Se connecter" : mode === "register" ? "Créer mon compte" : mode === "reset" ? "Envoyer le lien" : "Enregistrer le mot de passe"}
           </button>
+
           <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
             {mode === "login" && <>
               <button onClick={() => { setMode("register"); setError(""); setSuccess(""); }} style={{ background: "none", border: "none", color: "#60A5FA", cursor: "pointer", fontSize: 13 }}>Pas encore de compte ? Créer un compte</button>
               <button onClick={() => { setMode("reset"); setError(""); setSuccess(""); }} style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", fontSize: 12 }}>Mot de passe oublié ?</button>
             </>}
-            {mode !== "login" && <button onClick={() => { setMode("login"); setError(""); setSuccess(""); }} style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", fontSize: 13 }}>← Retour à la connexion</button>}
+            {(mode === "register" || mode === "reset") && <button onClick={() => { setMode("login"); setError(""); setSuccess(""); }} style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", fontSize: 13 }}>← Retour à la connexion</button>}
           </div>
         </div>
         <div style={{ textAlign: "center", marginTop: 24, fontSize: 12, color: "#374151" }}>Vos données sont privées et chiffrées 🔒</div>
