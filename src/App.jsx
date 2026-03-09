@@ -24,7 +24,7 @@ const THEMES = [
   { id: "dark",   label: "Sombre",     emoji: "🌑", bg: "#070B14" },
   { id: "night",  label: "Nuit bleue", emoji: "🔵", bg: "#060818" },
   { id: "light",  label: "Clair",      emoji: "☀️", bg: "#F8FAFC" },
-  { id: "rose",   label: "Rose",       emoji: "🌸", bg: "#1a0812" },
+  { id: "rose",   label: "Rose",       emoji: "🌸", bg: "#130010" },
   { id: "forest", label: "Forêt",      emoji: "🌿", bg: "#061309" },
   { id: "sunset", label: "Coucher",    emoji: "🌅", bg: "#120800" },
 ];
@@ -33,7 +33,7 @@ const THEME_COLORS = {
   dark:   { bg: "#070B14", preview: ["#0a1020","#1e293b","#334155"] },
   night:  { bg: "#060818", preview: ["#0a0a28","#1e1b4b","#312e81"] },
   light:  { bg: "#F8FAFC", preview: ["#f1f5f9","#e2e8f0","#cbd5e1"] },
-  rose:   { bg: "#1a0812", preview: ["#2d0a1f","#4a1232","#6b1d47"] },
+  rose:   { bg: "#130010", preview: ["#2d0020","#6b0050","#c0157a"] },
   forest: { bg: "#061309", preview: ["#0a2010","#14532d","#166534"] },
   sunset: { bg: "#120800", preview: ["#1c0f00","#431407","#7c2d12"] },
 };
@@ -672,8 +672,8 @@ function ThemeSelector({ theme, setTheme }) {
               <button key={t.id} onClick={() => apply(t)} style={{
                 width: "100%", display: "flex", alignItems: "center", gap: 12,
                 padding: "10px 12px", borderRadius: 9, border: "none", cursor: "pointer",
-                background: theme === t.id ? "rgba(59,130,246,0.15)" : "transparent",
-                color: theme === t.id ? "#60A5FA" : "#D1D5DB",
+                background: theme === t.id ? (theme === "rose" ? "rgba(236,72,153,0.20)" : theme === "forest" ? "rgba(16,185,129,0.15)" : theme === "sunset" ? "rgba(245,158,11,0.15)" : "rgba(59,130,246,0.15)") : "transparent",
+                color: theme === t.id ? (theme === "rose" ? "#F472B6" : theme === "forest" ? "#34D399" : theme === "sunset" ? "#FCD34D" : "#60A5FA") : "#D1D5DB",
                 fontFamily: "'DM Sans', sans-serif", fontSize: 13, textAlign: "left",
                 marginBottom: 2,
               }}>
@@ -3139,7 +3139,7 @@ export default function App() {
     dark:   { bg:"#070B14",  surface:"rgba(255,255,255,0.03)", surface2:"rgba(255,255,255,0.06)", border:"rgba(255,255,255,0.08)",  sidebar:"rgba(7,11,20,0.97)",   text:"#F9FAFB", textSub:"#9CA3AF", textMuted:"#6B7280", bottomNav:"rgba(7,11,20,0.97)"   },
     night:  { bg:"#060818",  surface:"rgba(255,255,255,0.04)", surface2:"rgba(99,102,241,0.08)",  border:"rgba(99,102,241,0.12)",   sidebar:"rgba(6,8,24,0.97)",    text:"#F9FAFB", textSub:"#A5B4FC", textMuted:"#6B7280", bottomNav:"rgba(6,8,24,0.97)"    },
     light:  { bg:"#F1F5F9",  surface:"rgba(0,0,0,0.04)",       surface2:"rgba(0,0,0,0.06)",       border:"rgba(0,0,0,0.10)",        sidebar:"rgba(255,255,255,0.97)",text:"#0F172A", textSub:"#475569", textMuted:"#94A3B8", bottomNav:"rgba(248,250,252,0.97)" },
-    rose:   { bg:"#1a0812",  surface:"rgba(236,72,153,0.06)",   surface2:"rgba(236,72,153,0.10)",  border:"rgba(236,72,153,0.12)",   sidebar:"rgba(26,8,18,0.97)",   text:"#FDF2F8", textSub:"#F9A8D4", textMuted:"#9D174D", bottomNav:"rgba(26,8,18,0.97)"   },
+    rose:   { bg:"#130010",  surface:"rgba(219,39,119,0.08)",   surface2:"rgba(219,39,119,0.14)",  border:"rgba(236,72,153,0.22)",   sidebar:"rgba(15,0,12,0.98)",   text:"#FFF0F8", textSub:"#F472B6", textMuted:"#BE185D", bottomNav:"rgba(15,0,12,0.98)"   },
     forest: { bg:"#061309",  surface:"rgba(16,185,129,0.06)",   surface2:"rgba(16,185,129,0.09)",  border:"rgba(16,185,129,0.12)",   sidebar:"rgba(6,19,9,0.97)",    text:"#F0FDF4", textSub:"#6EE7B7", textMuted:"#065F46", bottomNav:"rgba(6,19,9,0.97)"    },
     sunset: { bg:"#120800",  surface:"rgba(245,158,11,0.06)",   surface2:"rgba(245,158,11,0.09)",  border:"rgba(245,158,11,0.10)",   sidebar:"rgba(18,8,0,0.97)",    text:"#FFFBEB", textSub:"#FCD34D", textMuted:"#92400E", bottomNav:"rgba(18,8,0,0.97)"    },
   }[theme] || {
@@ -3353,10 +3353,23 @@ export default function App() {
       `}</style>
 
       {/* Fond ambiant */}
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", top: -200, left: -200, width: 600, height: 600, background: "radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", bottom: -200, right: -200, width: 600, height: 600, background: "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)" }} />
-      </div>
+      {(() => {
+        const glows = {
+          dark:   ["rgba(59,130,246,0.08)",  "rgba(99,102,241,0.06)"],
+          night:  ["rgba(99,102,241,0.12)",  "rgba(139,92,246,0.08)"],
+          light:  ["rgba(59,130,246,0.06)",  "rgba(99,102,241,0.04)"],
+          rose:   ["rgba(236,72,153,0.18)",  "rgba(190,24,93,0.12)"],
+          forest: ["rgba(16,185,129,0.10)",  "rgba(5,150,105,0.07)"],
+          sunset: ["rgba(245,158,11,0.12)",  "rgba(239,68,68,0.08)"],
+        };
+        const [g1, g2] = glows[theme] || glows.dark;
+        return (
+          <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+            <div style={{ position: "absolute", top: -200, left: -200, width: 700, height: 700, background: `radial-gradient(circle, ${g1} 0%, transparent 70%)` }} />
+            <div style={{ position: "absolute", bottom: -200, right: -200, width: 700, height: 700, background: `radial-gradient(circle, ${g2} 0%, transparent 70%)` }} />
+          </div>
+        );
+      })()}
 
       <div style={{ position: "relative", zIndex: 1, minHeight: "100vh", color: T.text }}>
 
@@ -3377,7 +3390,7 @@ export default function App() {
           {/* Logo */}
           <div style={{ padding: "18px 12px 16px", borderBottom: "1px solid var(--t-border, rgba(255,255,255,0.06))" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
-              <div style={{ width: 36, height: 36, background: "linear-gradient(135deg,#3B82F6,#6366F1)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💼</div>
+              <div style={{ width: 36, height: 36, background: theme === "rose" ? "linear-gradient(135deg,#EC4899,#BE185D)" : theme === "forest" ? "linear-gradient(135deg,#10B981,#059669)" : theme === "sunset" ? "linear-gradient(135deg,#F59E0B,#EF4444)" : theme === "night" ? "linear-gradient(135deg,#6366F1,#8B5CF6)" : "linear-gradient(135deg,#3B82F6,#6366F1)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💼</div>
               <div className="sidebar-logo-text">
                 <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: "var(--t-text, #FFFFFF)", whiteSpace: "nowrap", letterSpacing: "-0.2px" }}>MonPortefeuille</div>
                 <div style={{ fontSize: 10, color: "#6B7280", marginTop: 1 }}>{new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
@@ -3419,10 +3432,10 @@ export default function App() {
               const active = tab === item.id;
               return (
                 <button key={item.id} onClick={() => setTab(item.id)} className="nav-btn" style={{
-                  background: active ? "rgba(59,130,246,0.15)" : "transparent",
-                  color: active ? "#3B82F6" : "#9CA3AF",
+                  background: active ? (T?.surface2 || "rgba(59,130,246,0.15)") : "transparent",
+                  color: active ? (theme === "rose" ? "#F472B6" : theme === "forest" ? "#34D399" : theme === "sunset" ? "#FCD34D" : theme === "night" ? "#A78BFA" : "#3B82F6") : (T?.textMuted || "#9CA3AF"),
                   fontWeight: active ? 600 : 400,
-                  borderLeft: `3px solid ${active ? "#3B82F6" : "transparent"}`,
+                  borderLeft: `3px solid ${active ? (theme === "rose" ? "#F472B6" : theme === "forest" ? "#34D399" : theme === "sunset" ? "#FCD34D" : theme === "night" ? "#A78BFA" : "#3B82F6") : "transparent"}`,
                 }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
                   <span className="sidebar-label" style={{ color: active ? "#3B82F6" : "#9CA3AF" }}>{item.label}</span>
