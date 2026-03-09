@@ -8,26 +8,10 @@ import { createClient } from "@supabase/supabase-js";
    ────────────────────────────────────────────────────────────────────────── */
 const SUPABASE_URL      = "https://ptpiddkrnxmbxqipkzbt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0cGlkZGtybnhtYnhxaXBremJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDIyNTcsImV4cCI6MjA4NzcxODI1N30.VsZacJn97476yh-n28zt-R_9OM7gpqA60PYXikmX1eQ";
-var _supabaseInstance = null;
-function getSupabase() {
-  if (!_supabaseInstance) _supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  return _supabaseInstance;
-}
-var supabase = {
-  auth: {
-    getSession:           function() { return getSupabase().auth.getSession.apply(getSupabase().auth, arguments); },
-    onAuthStateChange:    function() { return getSupabase().auth.onAuthStateChange.apply(getSupabase().auth, arguments); },
-    signOut:              function() { return getSupabase().auth.signOut.apply(getSupabase().auth, arguments); },
-    signInWithPassword:   function() { return getSupabase().auth.signInWithPassword.apply(getSupabase().auth, arguments); },
-    signUp:               function() { return getSupabase().auth.signUp.apply(getSupabase().auth, arguments); },
-    resetPasswordForEmail:function() { return getSupabase().auth.resetPasswordForEmail.apply(getSupabase().auth, arguments); },
-    updateUser:           function() { return getSupabase().auth.updateUser.apply(getSupabase().auth, arguments); },
-  },
-  from: function() { return getSupabase().from.apply(getSupabase(), arguments); },
-};
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ────────────────── CONSTANTES THÈME & CATÉGORIES ────────────────── */
-var ASSET_TYPE_META = [
+const ASSET_TYPE_META = [
   { id: "Actions",        label: "Actions",        emoji: "📈", color: "#3B82F6" },
   { id: "ETF",            label: "ETF",            emoji: "🌍", color: "#10B981" },
   { id: "Private Equity", label: "Private Equity", emoji: "🏢", color: "#8B5CF6" },
@@ -36,7 +20,7 @@ var ASSET_TYPE_META = [
   { id: "Autres",         label: "Autres",         emoji: "📦", color: "#6B7280" },
 ];
 
-var THEMES = [
+const THEMES = [
   { id: "dark",   label: "Sombre",     emoji: "🌑", bg: "#070B14" },
   { id: "night",  label: "Nuit bleue", emoji: "🔵", bg: "#060818" },
   { id: "light",  label: "Clair",      emoji: "☀️", bg: "#F8FAFC" },
@@ -45,7 +29,7 @@ var THEMES = [
   { id: "sunset", label: "Coucher",    emoji: "🌅", bg: "#120800" },
 ];
 
-var THEME_COLORS = {
+const THEME_COLORS = {
   dark:   { bg: "#070B14", preview: ["#0a1020","#1e293b","#334155"] },
   night:  { bg: "#060818", preview: ["#0a0a28","#1e1b4b","#312e81"] },
   light:  { bg: "#F8FAFC", preview: ["#f1f5f9","#e2e8f0","#cbd5e1"] },
@@ -55,58 +39,13 @@ var THEME_COLORS = {
 };
 
 
-var REVENUE_CATEGORIES = [
-  { id: "salaire",     label: "Salaire",            emoji: "💼", color: "#10B981" },
-  { id: "freelance",   label: "Freelance / Side",   emoji: "💻", color: "#3B82F6" },
-  { id: "dividendes",  label: "Dividendes",         emoji: "📈", color: "#F59E0B" },
-  { id: "loyer_recu",  label: "Loyer perçu",        emoji: "🏠", color: "#8B5CF6" },
-  { id: "aides",       label: "Aides / APL",        emoji: "🏛️", color: "#06B6D4" },
-  { id: "autres_rev",  label: "Autres revenus",     emoji: "💰", color: "#6B7280" },
-];
-
-var EXPENSE_CATEGORIES = [
-  { id: "logement",      label: "Logement",        emoji: "🏠", color: "#3B82F6" },
-  { id: "alimentation",  label: "Alimentation",    emoji: "🛒", color: "#10B981" },
-  { id: "transport",     label: "Transport",       emoji: "🚗", color: "#F59E0B" },
-  { id: "sante",         label: "Santé",           emoji: "💊", color: "#EF4444" },
-  { id: "loisirs",       label: "Loisirs",         emoji: "🎬", color: "#8B5CF6" },
-  { id: "restaurants",   label: "Restaurants",     emoji: "🍽️", color: "#EC4899" },
-  { id: "vetements",     label: "Vêtements",       emoji: "👗", color: "#06B6D4" },
-  { id: "abonnements",   label: "Abonnements",     emoji: "📱", color: "#6366F1" },
-  { id: "epargne",       label: "Épargne",         emoji: "💰", color: "#14B8A6" },
-  { id: "autres",        label: "Autres",          emoji: "📦", color: "#6B7280" },
-];
-
-var INITIAL_BUDGETS = {
-  logement: 800, alimentation: 400, transport: 150, sante: 80,
-  loisirs: 150, restaurants: 120, vetements: 100, abonnements: 60,
-  epargne: 300, autres: 100,
-};
 
 
-var LIVRET_TYPES = [
-  { id: "livret_a",    label: "Livret A",           emoji: "🟢", color: "#10B981", tauxDefaut: 3.0,  plafond: 22950 },
-  { id: "ldds",        label: "LDDS",               emoji: "🔵", color: "#3B82F6", tauxDefaut: 3.0,  plafond: 12000 },
-  { id: "pel",         label: "PEL",                emoji: "🏠", color: "#8B5CF6", tauxDefaut: 2.25, plafond: 61200 },
-  { id: "cel",         label: "CEL",                emoji: "🏡", color: "#6366F1", tauxDefaut: 2.0,  plafond: 15300 },
-  { id: "livret_jeune",label: "Livret Jeune",       emoji: "🟡", color: "#F59E0B", tauxDefaut: 4.0,  plafond: 1600  },
-  { id: "lep",         label: "LEP",                emoji: "🔴", color: "#EF4444", tauxDefaut: 6.1,  plafond: 10000 },
-  { id: "livret_perso",label: "Livret bancaire",    emoji: "🏦", color: "#6B7280", tauxDefaut: 1.0,  plafond: null  },
-  { id: "autre",       label: "Autre",              emoji: "📦", color: "#9CA3AF", tauxDefaut: 0,    plafond: null  },
-];
 
-var OBJECTIF_TYPES = [
-  { id: "urgence",   label: "Fonds d'urgence",   emoji: "🛡️", color: "#EF4444" },
-  { id: "voiture",   label: "Voiture",            emoji: "🚗", color: "#F59E0B" },
-  { id: "voyage",    label: "Voyage",             emoji: "✈️", color: "#3B82F6" },
-  { id: "immo",      label: "Immobilier",         emoji: "🏠", color: "#8B5CF6" },
-  { id: "retraite",  label: "Retraite",           emoji: "🌅", color: "#10B981" },
-  { id: "etudes",    label: "Études",             emoji: "🎓", color: "#06B6D4" },
-  { id: "projet",    label: "Projet perso",       emoji: "💡", color: "#F97316" },
-  { id: "autre",     label: "Autre",              emoji: "🎯", color: "#6B7280" },
-];
 
-var TYPE_COLORS = {
+
+
+const TYPE_COLORS = {
   "Actions": "#3B82F6",
   "ETF": "#10B981",
   "Private Equity": "#F59E0B",
@@ -1595,6 +1534,15 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
 
 /* ────────────────── BUDGET ────────────────── */
 
+const REVENUE_CATEGORIES = [
+  { id: "salaire",     label: "Salaire",            emoji: "💼", color: "#10B981" },
+  { id: "freelance",   label: "Freelance / Side",   emoji: "💻", color: "#3B82F6" },
+  { id: "dividendes",  label: "Dividendes",         emoji: "📈", color: "#F59E0B" },
+  { id: "loyer_recu",  label: "Loyer perçu",        emoji: "🏠", color: "#8B5CF6" },
+  { id: "aides",       label: "Aides / APL",        emoji: "🏛️", color: "#06B6D4" },
+  { id: "autres_rev",  label: "Autres revenus",     emoji: "💰", color: "#6B7280" },
+];
+
 function Budget({ depenses, revenus, setRevenus, setDepenses }) {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ date: new Date().toISOString().slice(0,7) + "-01", label: "", categorie: "salaire", montant: "", note: "", recurrent: true });
@@ -1940,6 +1888,25 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
     </div>
   );
 }
+
+const EXPENSE_CATEGORIES = [
+  { id: "logement",      label: "Logement",        emoji: "🏠", color: "#3B82F6" },
+  { id: "alimentation",  label: "Alimentation",    emoji: "🛒", color: "#10B981" },
+  { id: "transport",     label: "Transport",       emoji: "🚗", color: "#F59E0B" },
+  { id: "sante",         label: "Santé",           emoji: "💊", color: "#EF4444" },
+  { id: "loisirs",       label: "Loisirs",         emoji: "🎬", color: "#8B5CF6" },
+  { id: "restaurants",   label: "Restaurants",     emoji: "🍽️", color: "#EC4899" },
+  { id: "vetements",     label: "Vêtements",       emoji: "👗", color: "#06B6D4" },
+  { id: "abonnements",   label: "Abonnements",     emoji: "📱", color: "#6366F1" },
+  { id: "epargne",       label: "Épargne",         emoji: "💰", color: "#14B8A6" },
+  { id: "autres",        label: "Autres",          emoji: "📦", color: "#6B7280" },
+];
+
+const INITIAL_BUDGETS = {
+  logement: 800, alimentation: 400, transport: 150, sante: 80,
+  loisirs: 150, restaurants: 120, vetements: 100, abonnements: 60,
+  epargne: 300, autres: 100,
+};
 
 /* ────────────────── DÉPENSES ────────────────── */
 
@@ -2397,6 +2364,16 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
 
 /* ────────────────── ÉPARGNE ────────────────── */
 
+const LIVRET_TYPES = [
+  { id: "livret_a",      label: "Livret A",           taux: 3.0,  color: "#10B981" },
+  { id: "ldds",          label: "LDDS",               taux: 3.0,  color: "#3B82F6" },
+  { id: "pel",           label: "PEL",                taux: 2.25, color: "#8B5CF6" },
+  { id: "lep",           label: "LEP",                taux: 4.0,  color: "#EF4444" },
+  { id: "livret_jeune",  label: "Livret Jeune",       taux: 3.0,  color: "#F59E0B" },
+  { id: "csl",           label: "Compte sur livret",  taux: 1.0,  color: "#6B7280" },
+  { id: "autre_livret",  label: "Autre livret",       taux: 0,    color: "#9CA3AF" },
+];
+
 function Epargne({ livrets, setLivrets, portfolio }) {
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem]   = useState(null);
@@ -2602,6 +2579,17 @@ function Epargne({ livrets, setLivrets, portfolio }) {
     </div>
   );
 }
+
+const OBJECTIF_TYPES = [
+  { id: "urgence",  label: "Épargne urgence", emoji: "🛡️", color: "#EF4444" },
+  { id: "voiture",  label: "Voiture",         emoji: "🚗", color: "#F59E0B" },
+  { id: "voyage",   label: "Voyage",          emoji: "✈️", color: "#3B82F6" },
+  { id: "immo",     label: "Immobilier",      emoji: "🏠", color: "#8B5CF6" },
+  { id: "retraite", label: "Retraite",        emoji: "🌅", color: "#10B981" },
+  { id: "etudes",   label: "Études",          emoji: "🎓", color: "#06B6D4" },
+  { id: "projet",   label: "Projet perso",    emoji: "💡", color: "#F97316" },
+  { id: "autre",    label: "Autre",           emoji: "🎯", color: "#6B7280" },
+];
 
 /* ────────────────── OBJECTIFS ────────────────── */
 
