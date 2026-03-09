@@ -11,34 +11,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-/* ────────────────── DONNÉES INITIALES ────────────────── */
-const INITIAL_TRANSACTIONS = [
-  { id: 1,  date: "2025-02-13", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 1,      price: 29.33,   fees: 1,    total: 30.33,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
-  { id: 2,  date: "2025-03-04", asset: "AXA",                              type: "Achat", qty: 2,      price: 37.82,   fees: 1.23, total: 76.87,       broker: "Trade Republic", assetType: "Actions",        ticker: "CS.PA"     },
-  { id: 3,  date: "2025-04-03", asset: "Engie",                            type: "Achat", qty: 2,      price: 18.51,   fees: 0.34, total: 37.36,       broker: "Trade Republic", assetType: "Actions",        ticker: "ENGI.PA"   },
-  { id: 4,  date: "2025-05-07", asset: "Renault",                          type: "Achat", qty: 1,      price: 47.72,   fees: 0.43, total: 48.15,       broker: "Trade Republic", assetType: "Actions",        ticker: "RNO.PA"    },
-  { id: 5,  date: "2025-05-07", asset: "Crédit Agricole",                  type: "Achat", qty: 1,      price: 16.79,   fees: 0.15, total: 16.94,       broker: "Trade Republic", assetType: "Actions",        ticker: "ACA.PA"    },
-  { id: 6,  date: "2025-06-25", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 1,      price: 26.29,   fees: 0.13, total: 26.42,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
-  { id: 7,  date: "2025-06-25", asset: "Drone Volt Saca",                  type: "Achat", qty: 43,     price: 0.734,   fees: 0.16, total: 31.722,      broker: "Trade Republic", assetType: "Actions",        ticker: "ALDRV.PA"  },
-  { id: 8,  date: "2025-07-04", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 2,      price: 26.65,   fees: 0.26, total: 53.56,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
-  { id: 9,  date: "2025-09-05", asset: "MSCI World Swap PEA EUR (Acc)",    type: "Achat", qty: 8,      price: 5.785,   fees: 0.23, total: 46.51,       broker: "Trade Republic", assetType: "ETF",            ticker: "MWRD.PA"   },
-  { id: 10, date: "2025-09-05", asset: "STOXX Europe 600 Banks EUR (Acc)", type: "Achat", qty: 3,      price: 50,      fees: 0.75, total: 150.75,      broker: "Trade Republic", assetType: "ETF",            ticker: "EXV1.DE"   },
-  { id: 11, date: "2025-09-05", asset: "MSCI EMU High Dividend EUR",       type: "Achat", qty: 1,      price: 175.48,  fees: 0.88, total: 176.36,      broker: "Trade Republic", assetType: "ETF",            ticker: "EMUD.PA"   },
-  { id: 12, date: "2025-10-14", asset: "AXA",                              type: "Achat", qty: 2,      price: 39.51,   fees: 0.72, total: 79.74,       broker: "Trade Republic", assetType: "Actions",        ticker: "CS.PA"     },
-  { id: 13, date: "2025-10-14", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 4,      price: 28.756,  fees: 0.58, total: 115.604,     broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
-  { id: 14, date: "2025-10-14", asset: "Crédit Agricole",                  type: "Achat", qty: 1,      price: 16.44,   fees: 0.15, total: 16.59,       broker: "Trade Republic", assetType: "Actions",        ticker: "ACA.PA"    },
-  { id: 15, date: "2025-10-14", asset: "Drone Volt Saca",                  type: "Achat", qty: 7,      price: 0.82,    fees: 0.03, total: 5.77,        broker: "Trade Republic", assetType: "Actions",        ticker: "ALDRV.PA"  },
-  { id: 16, date: "2025-12-10", asset: "Renault",                          type: "Achat", qty: 2,      price: 35.63,   fees: 0.65, total: 71.91,       broker: "Trade Republic", assetType: "Actions",        ticker: "RNO.PA"    },
-  { id: 17, date: "2025-12-10", asset: "Rexel",                            type: "Achat", qty: 4,      price: 32.97,   fees: 1.19, total: 133.07,      broker: "Trade Republic", assetType: "Actions",        ticker: "RXL.PA"    },
-  { id: 18, date: "2025-12-10", asset: "STOXX Europe 600 Banks EUR (Acc)", type: "Achat", qty: 2,      price: 56.64,   fees: 0.57, total: 113.85,      broker: "Trade Republic", assetType: "ETF",            ticker: "EXV1.DE"   },
-  { id: 19, date: "2025-12-10", asset: "MSCI World Swap PEA EUR (Acc)",    type: "Achat", qty: 10,     price: 6.102,   fees: 0.31, total: 61.33,       broker: "Trade Republic", assetType: "ETF",            ticker: "MWRD.PA"   },
-  { id: 20, date: "2026-02-05", asset: "Vinci",                            type: "Achat", qty: 1,      price: 125.5,   fees: 1.13, total: 126.63,      broker: "Trade Republic", assetType: "Actions",        ticker: "DG.PA"     },
-  { id: 21, date: "2026-02-05", asset: "Air Liquide",                      type: "Achat", qty: 1,      price: 167.78,  fees: 1.51, total: 169.29,      broker: "Trade Republic", assetType: "Actions",        ticker: "AI.PA"     },
-  { id: 22, date: "2026-02-05", asset: "Bouygues",                         type: "Achat", qty: 2,      price: 46.71,   fees: 0.84, total: 94.26,       broker: "Trade Republic", assetType: "Actions",        ticker: "EN.PA"     },
-  { id: 23, date: "2026-02-05", asset: "Banco Sabadell",                   type: "Achat", qty: 12,     price: 3.341,   fees: 0.28, total: 40.372,      broker: "Trade Republic", assetType: "Actions",        ticker: "SAB.MC"    },
-  { id: 24, date: "2024-11-11", asset: "Turismo",                          type: "Achat", qty: 4.4927, price: 111.29,  fees: 0,    total: 499.992583,  broker: "Crowd Cube",     assetType: "Private Equity", ticker: ""          },
-];
-
 /* ────────────────── PORTFOLIO CALCULÉ DEPUIS LES TRANSACTIONS ────────────────── */
 // Les transactions sont la SEULE source de vérité.
 // buildPortfolio regroupe les achats/ventes par actif et calcule le PRU (prix moyen pondéré).
