@@ -39,6 +39,57 @@ const THEME_COLORS = {
 };
 
 
+const REVENUE_CATEGORIES = [
+  { id: "salaire",     label: "Salaire",            emoji: "💼", color: "#10B981" },
+  { id: "freelance",   label: "Freelance / Side",   emoji: "💻", color: "#3B82F6" },
+  { id: "dividendes",  label: "Dividendes",         emoji: "📈", color: "#F59E0B" },
+  { id: "loyer_recu",  label: "Loyer perçu",        emoji: "🏠", color: "#8B5CF6" },
+  { id: "aides",       label: "Aides / APL",        emoji: "🏛️", color: "#06B6D4" },
+  { id: "autres_rev",  label: "Autres revenus",     emoji: "💰", color: "#6B7280" },
+];
+
+const EXPENSE_CATEGORIES = [
+  { id: "logement",      label: "Logement",        emoji: "🏠", color: "#3B82F6" },
+  { id: "alimentation",  label: "Alimentation",    emoji: "🛒", color: "#10B981" },
+  { id: "transport",     label: "Transport",       emoji: "🚗", color: "#F59E0B" },
+  { id: "sante",         label: "Santé",           emoji: "💊", color: "#EF4444" },
+  { id: "loisirs",       label: "Loisirs",         emoji: "🎬", color: "#8B5CF6" },
+  { id: "restaurants",   label: "Restaurants",     emoji: "🍽️", color: "#EC4899" },
+  { id: "vetements",     label: "Vêtements",       emoji: "👗", color: "#06B6D4" },
+  { id: "abonnements",   label: "Abonnements",     emoji: "📱", color: "#6366F1" },
+  { id: "epargne",       label: "Épargne",         emoji: "💰", color: "#14B8A6" },
+  { id: "autres",        label: "Autres",          emoji: "📦", color: "#6B7280" },
+];
+
+const INITIAL_BUDGETS = {
+  logement: 800, alimentation: 400, transport: 150, sante: 80,
+  loisirs: 150, restaurants: 120, vetements: 100, abonnements: 60,
+  epargne: 300, autres: 100,
+};
+
+
+const LIVRET_TYPES = [
+  { id: "livret_a",    label: "Livret A",           emoji: "🟢", color: "#10B981", tauxDefaut: 3.0,  plafond: 22950 },
+  { id: "ldds",        label: "LDDS",               emoji: "🔵", color: "#3B82F6", tauxDefaut: 3.0,  plafond: 12000 },
+  { id: "pel",         label: "PEL",                emoji: "🏠", color: "#8B5CF6", tauxDefaut: 2.25, plafond: 61200 },
+  { id: "cel",         label: "CEL",                emoji: "🏡", color: "#6366F1", tauxDefaut: 2.0,  plafond: 15300 },
+  { id: "livret_jeune",label: "Livret Jeune",       emoji: "🟡", color: "#F59E0B", tauxDefaut: 4.0,  plafond: 1600  },
+  { id: "lep",         label: "LEP",                emoji: "🔴", color: "#EF4444", tauxDefaut: 6.1,  plafond: 10000 },
+  { id: "livret_perso",label: "Livret bancaire",    emoji: "🏦", color: "#6B7280", tauxDefaut: 1.0,  plafond: null  },
+  { id: "autre",       label: "Autre",              emoji: "📦", color: "#9CA3AF", tauxDefaut: 0,    plafond: null  },
+];
+
+const OBJECTIF_TYPES = [
+  { id: "urgence",   label: "Fonds d'urgence",   emoji: "🛡️", color: "#EF4444" },
+  { id: "voiture",   label: "Voiture",            emoji: "🚗", color: "#F59E0B" },
+  { id: "voyage",    label: "Voyage",             emoji: "✈️", color: "#3B82F6" },
+  { id: "immo",      label: "Immobilier",         emoji: "🏠", color: "#8B5CF6" },
+  { id: "retraite",  label: "Retraite",           emoji: "🌅", color: "#10B981" },
+  { id: "etudes",    label: "Études",             emoji: "🎓", color: "#06B6D4" },
+  { id: "projet",    label: "Projet perso",       emoji: "💡", color: "#F97316" },
+  { id: "autre",     label: "Autre",              emoji: "🎯", color: "#6B7280" },
+];
+
 /* ────────────────── DONNÉES INITIALES ────────────────── */
 const INITIAL_TRANSACTIONS = [
   { id: 1,  date: "2025-02-13", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 1,      price: 29.33,   fees: 1,    total: 30.33,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
@@ -120,11 +171,13 @@ const TYPE_COLORS = {
   "Obligations / Fonds": "#6B7280",
 };
 
-const fmt = (n, decimals = 2) =>
-  new Intl.NumberFormat("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(n);
-const fmtEur = (n) =>
-  new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
-const fmtPct = (n) => `${n >= 0 ? "+" : ""}${fmt(n * 100, 2)}%`;
+function fmt(n, decimals = 2) {
+  return new Intl.NumberFormat("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(n);
+}
+function fmtEur(n) {
+  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+}
+function fmtPct(n) { return `${n >= 0 ? "+" : ""}${fmt(n * 100, 2)}%`; }
 
 /* ────────────────── CALCULS ────────────────── */
 function calcAsset(a) {
@@ -1550,14 +1603,6 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
 }
 
 /* ────────────────── BUDGET ────────────────── */
-const REVENUE_CATEGORIES = [
-  { id: "salaire",     label: "Salaire",            emoji: "💼", color: "#10B981" },
-  { id: "freelance",   label: "Freelance / Side",   emoji: "💻", color: "#3B82F6" },
-  { id: "dividendes",  label: "Dividendes",         emoji: "📈", color: "#F59E0B" },
-  { id: "loyer_recu",  label: "Loyer perçu",        emoji: "🏠", color: "#8B5CF6" },
-  { id: "aides",       label: "Aides / APL",        emoji: "🏛️", color: "#06B6D4" },
-  { id: "autres_rev",  label: "Autres revenus",     emoji: "💰", color: "#6B7280" },
-];
 
 function Budget({ depenses, revenus, setRevenus, setDepenses }) {
   const [showModal, setShowModal] = useState(false);
@@ -1906,24 +1951,7 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
 }
 
 /* ────────────────── DÉPENSES ────────────────── */
-const EXPENSE_CATEGORIES = [
-  { id: "logement",      label: "Logement",        emoji: "🏠", color: "#3B82F6" },
-  { id: "alimentation",  label: "Alimentation",    emoji: "🛒", color: "#10B981" },
-  { id: "transport",     label: "Transport",       emoji: "🚗", color: "#F59E0B" },
-  { id: "sante",         label: "Santé",           emoji: "💊", color: "#EF4444" },
-  { id: "loisirs",       label: "Loisirs",         emoji: "🎬", color: "#8B5CF6" },
-  { id: "restaurants",   label: "Restaurants",     emoji: "🍽️", color: "#EC4899" },
-  { id: "vetements",     label: "Vêtements",       emoji: "👗", color: "#06B6D4" },
-  { id: "abonnements",   label: "Abonnements",     emoji: "📱", color: "#6366F1" },
-  { id: "epargne",       label: "Épargne",         emoji: "💰", color: "#14B8A6" },
-  { id: "autres",        label: "Autres",          emoji: "📦", color: "#6B7280" },
-];
 
-const INITIAL_BUDGETS = {
-  logement: 800, alimentation: 400, transport: 150, sante: 80,
-  loisirs: 150, restaurants: 120, vetements: 100, abonnements: 60,
-  epargne: 300, autres: 100,
-};
 
 function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
   const [showModal, setShowModal]           = useState(false);
@@ -2377,16 +2405,6 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
 }
 
 /* ────────────────── ÉPARGNE ────────────────── */
-const LIVRET_TYPES = [
-  { id: "livret_a",    label: "Livret A",           emoji: "🟢", color: "#10B981", tauxDefaut: 3.0,  plafond: 22950 },
-  { id: "ldds",        label: "LDDS",               emoji: "🔵", color: "#3B82F6", tauxDefaut: 3.0,  plafond: 12000 },
-  { id: "pel",         label: "PEL",                emoji: "🏠", color: "#8B5CF6", tauxDefaut: 2.25, plafond: 61200 },
-  { id: "cel",         label: "CEL",                emoji: "🏡", color: "#6366F1", tauxDefaut: 2.0,  plafond: 15300 },
-  { id: "livret_jeune",label: "Livret Jeune",       emoji: "🟡", color: "#F59E0B", tauxDefaut: 4.0,  plafond: 1600  },
-  { id: "lep",         label: "LEP",                emoji: "🔴", color: "#EF4444", tauxDefaut: 6.1,  plafond: 10000 },
-  { id: "livret_perso",label: "Livret bancaire",    emoji: "🏦", color: "#6B7280", tauxDefaut: 1.0,  plafond: null  },
-  { id: "autre",       label: "Autre",              emoji: "📦", color: "#9CA3AF", tauxDefaut: 0,    plafond: null  },
-];
 
 function Epargne({ livrets, setLivrets, portfolio }) {
   const [showModal, setShowModal] = useState(false);
@@ -2595,16 +2613,6 @@ function Epargne({ livrets, setLivrets, portfolio }) {
 }
 
 /* ────────────────── OBJECTIFS ────────────────── */
-const OBJECTIF_TYPES = [
-  { id: "urgence",   label: "Fonds d'urgence",   emoji: "🛡️", color: "#EF4444" },
-  { id: "voiture",   label: "Voiture",            emoji: "🚗", color: "#F59E0B" },
-  { id: "voyage",    label: "Voyage",             emoji: "✈️", color: "#3B82F6" },
-  { id: "immo",      label: "Immobilier",         emoji: "🏠", color: "#8B5CF6" },
-  { id: "retraite",  label: "Retraite",           emoji: "🌅", color: "#10B981" },
-  { id: "etudes",    label: "Études",             emoji: "🎓", color: "#06B6D4" },
-  { id: "projet",    label: "Projet perso",       emoji: "💡", color: "#F97316" },
-  { id: "autre",     label: "Autre",              emoji: "🎯", color: "#6B7280" },
-];
 
 function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livrets }) {
   const [showModal, setShowModal] = useState(false);
