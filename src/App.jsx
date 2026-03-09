@@ -122,12 +122,12 @@ function calcAsset(a) {
 function KpiCard({ label, value, sub, positive }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+      background: "var(--t-surface, rgba(255,255,255,0.04))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))",
       borderRadius: 16, padding: "20px 24px", backdropFilter: "blur(12px)",
     }}>
-      <div style={{ fontSize: 12, color: "#6B7280", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, color: positive === undefined ? "#F9FAFB" : positive ? "#10B981" : "#EF4444", fontFamily: "'Syne', sans-serif" }}>{value}</div>
-      {sub && <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 4 }}>{sub}</div>}
+      <div style={{ fontSize: 12, color: "var(--t-textMuted, #6B7280)", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: positive === undefined ? "var(--t-text, #F9FAFB)" : positive ? "#10B981" : "#EF4444", fontFamily: "'Syne', sans-serif" }}>{value}</div>
+      {sub && <div style={{ fontSize: 13, color: "var(--t-textSub, #9CA3AF)", marginTop: 4 }}>{sub}</div>}
     </div>
   );
 }
@@ -149,11 +149,11 @@ function Modal({ title, onClose, children }) {
       zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
     }}>
       <div style={{
-        background: "#111827", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20,
+        background: "var(--t-sidebar, #111827)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 20,
         padding: "clamp(16px, 4vw, 32px)", width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#F9FAFB", fontFamily: "'Syne', sans-serif" }}>{title}</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "var(--t-text, #F9FAFB)", fontFamily: "'Syne', sans-serif" }}>{title}</div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: 24, cursor: "pointer" }}>×</button>
         </div>
         {children}
@@ -167,8 +167,8 @@ function Input({ label, ...props }) {
     <div style={{ marginBottom: 16 }}>
       {label && <label style={{ display: "block", fontSize: 12, color: "#9CA3AF", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</label>}
       <input {...props} style={{
-        width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: 10, padding: "10px 14px", color: "#F9FAFB", fontSize: 14, outline: "none",
+        width: "100%", background: "var(--t-surface, rgba(255,255,255,0.06))", border: "1px solid var(--t-border, rgba(255,255,255,0.12))",
+        borderRadius: 10, padding: "10px 14px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none",
         fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box",
         ...props.style,
       }} />
@@ -181,8 +181,8 @@ function Select({ label, children, ...props }) {
     <div style={{ marginBottom: 16 }}>
       {label && <label style={{ display: "block", fontSize: 12, color: "#9CA3AF", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</label>}
       <select {...props} style={{
-        width: "100%", background: "#1F2937", border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: 10, padding: "10px 14px", color: "#F9FAFB", fontSize: 14, outline: "none",
+        width: "100%", background: "var(--t-sidebar, #1F2937)", border: "1px solid var(--t-border, rgba(255,255,255,0.12))",
+        borderRadius: 10, padding: "10px 14px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none",
         fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box",
         ...props.style,
       }}>{children}</select>
@@ -193,7 +193,7 @@ function Select({ label, children, ...props }) {
 function Btn({ children, variant = "primary", ...props }) {
   const styles = {
     primary: { background: "linear-gradient(135deg,#3B82F6,#6366F1)", color: "#fff" },
-    ghost: { background: "rgba(255,255,255,0.06)", color: "#D1D5DB", border: "1px solid rgba(255,255,255,0.1)" },
+    ghost: { background: "rgba(255,255,255,0.06)", color: "#D1D5DB", border: "1px solid var(--t-border, rgba(255,255,255,0.1))" },
     danger: { background: "#EF444420", color: "#EF4444", border: "1px solid #EF444440" },
     success: { background: "#10B98120", color: "#10B981", border: "1px solid #10B98140" },
   };
@@ -207,7 +207,7 @@ function Btn({ children, variant = "primary", ...props }) {
 }
 
 /* ────────────────── TABLEAU DE BORD ────────────────── */
-function Dashboard({ portfolio, transactions, historique, depenses, revenus, livrets, objectifs, theme = "dark", setTheme }) {
+function Dashboard({ portfolio, transactions, historique, depenses, revenus, livrets, objectifs, theme = "dark", setTheme, T = {} }) {
   const assets        = portfolio.map(calcAsset);
   const totalBourse   = assets.reduce((s, a) => s + a.value, 0);
   const totalInvested = assets.reduce((s, a) => s + a.invested, 0);
@@ -263,7 +263,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
   const firstSnapshot  = historique.length > 1 ? historique[0] : null;
   const evol = latestSnapshot && firstSnapshot ? latestSnapshot.valeur - firstSnapshot.valeur : null;
 
-  const S = { card: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 } };
+  const S = { card: { background: T.surface || "rgba(255,255,255,0.03)", border: `1px solid ${T.border || "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 24 } };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -271,7 +271,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
       {/* ── HERO : patrimoine total ── */}
       <div style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(99,102,241,0.08) 100%)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 20, padding: "28px 32px" }}>
         <div style={{ fontSize: 12, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Patrimoine total</div>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 48, fontWeight: 800, color: "#FFFFFF", letterSpacing: "-1px", marginBottom: 4 }}>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 48, fontWeight: 800, color: "var(--t-text, #FFFFFF)", letterSpacing: "-1px", marginBottom: 4 }}>
           {fmtEur(totalPatrimoine)}
         </div>
         <div style={{ display: "flex", gap: 32, marginTop: 16, flexWrap: "wrap" }}>
@@ -295,12 +295,12 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 
         {/* Graphique évolution */}
         <div style={S.card}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>📈 Évolution du portefeuille</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>📈 Évolution du portefeuille</div>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={investiCumulData} margin={{ left: 0, right: 10 }}>
               <XAxis dataKey="dateLabel" tick={{ fill: "#6B7280", fontSize: 10 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
               <YAxis tick={{ fill: "#6B7280", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `${(v/1000).toFixed(1)}k€`} />
-              <Tooltip contentStyle={{ background: "#1F2937", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#F9FAFB", fontSize: 12 }} formatter={(v, n) => [fmtEur(v), n === "valeur" ? "Valeur de marché" : "Montant investi"]} />
+              <Tooltip contentStyle={{ background: "var(--t-sidebar, #1F2937)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, color: "var(--t-text, #F9FAFB)", fontSize: 12 }} formatter={(v, n) => [fmtEur(v), n === "valeur" ? "Valeur de marché" : "Montant investi"]} />
               <Legend formatter={v => v === "valeur" ? "Valeur de marché" : "Montant investi"} wrapperStyle={{ fontSize: 11, color: "#6B7280" }} />
               <Line type="monotone" dataKey="investi" stroke="#6366F1" strokeWidth={2} dot={false} strokeDasharray="5 5" connectNulls />
               {hasValeurData && <Line type="monotone" dataKey="valeur" stroke="#10B981" strokeWidth={2.5} dot={false} connectNulls />}
@@ -315,13 +315,13 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 
         {/* Objectifs */}
         <div style={S.card}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>🎯 Objectifs</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>🎯 Objectifs</div>
           {objTotal === 0 ? (
             <div style={{ color: "#6B7280", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Aucun objectif défini</div>
           ) : (
             <>
               <div style={{ textAlign: "center", marginBottom: 16 }}>
-                <div style={{ fontSize: 36, fontWeight: 800, color: "#F9FAFB", fontFamily: "'Syne', sans-serif" }}>{objAtteints}<span style={{ fontSize: 18, color: "#6B7280" }}>/{objTotal}</span></div>
+                <div style={{ fontSize: 36, fontWeight: 800, color: "var(--t-text, #F9FAFB)", fontFamily: "'Syne', sans-serif" }}>{objAtteints}<span style={{ fontSize: 18, color: "#6B7280" }}>/{objTotal}</span></div>
                 <div style={{ fontSize: 12, color: "#6B7280" }}>objectifs atteints</div>
               </div>
               <div style={{ marginBottom: 12 }}>
@@ -363,7 +363,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 
         {/* Budget ce mois */}
         <div style={S.card}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>💳 Ce mois-ci</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>💳 Ce mois-ci</div>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
               <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 4 }}>Revenus</div>
@@ -387,7 +387,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
               {topCats.map(([cat, val]) => (
                 <div key={cat} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                   <span style={{ fontSize: 12, color: "#9CA3AF" }}>{cat}</span>
-                  <span style={{ fontSize: 12, color: "#F9FAFB", fontWeight: 600 }}>{fmtEur(val)}</span>
+                  <span style={{ fontSize: 12, color: "var(--t-text, #F9FAFB)", fontWeight: 600 }}>{fmtEur(val)}</span>
                 </div>
               ))}
             </div>
@@ -397,7 +397,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 
         {/* Top performances */}
         <div style={S.card}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>🏆 Meilleures performances</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>🏆 Meilleures performances</div>
           {top3.map((a, i) => (
             <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -405,7 +405,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
                   {i + 1}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 500 }}>{a.name}</div>
+                  <div style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{a.name}</div>
                   <div style={{ fontSize: 11, color: "#6B7280" }}>{fmtEur(a.value)}</div>
                 </div>
               </div>
@@ -429,7 +429,7 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 
         {/* Livrets */}
         <div style={S.card}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>🏦 Livrets d'épargne</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>🏦 Livrets d'épargne</div>
           {livrets.length === 0 ? (
             <div style={{ color: "#6B7280", fontSize: 13, textAlign: "center", padding: "20px 0" }}>Aucun livret ajouté</div>
           ) : (
@@ -501,13 +501,13 @@ function CategoriePerfWidget({ assets }) {
   const worst3 = [...filtered].sort((a, b) => a.perf - b.perf).slice(0, 3);
 
   const S = {
-    card: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 },
-    mini: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 14 },
+    card: { background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 },
+    mini: { background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 12, padding: 14 },
   };
 
   return (
     <div style={S.card}>
-      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: "#F9FAFB", marginBottom: 20 }}>
+      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: "var(--t-text, #F9FAFB)", marginBottom: 20 }}>
         🔬 Analyse par catégorie
       </div>
 
@@ -531,11 +531,11 @@ function CategoriePerfWidget({ assets }) {
         ))}
         <button onClick={() => setSelected(available)} style={{
           padding: "7px 14px", borderRadius: 20, fontSize: 12, cursor: "pointer",
-          border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "#4B5563",
+          border: "1px solid var(--t-border, rgba(255,255,255,0.08))", background: "transparent", color: "#4B5563",
         }}>Tout ✓</button>
         <button onClick={() => setSelected([])} style={{
           padding: "7px 14px", borderRadius: 20, fontSize: 12, cursor: "pointer",
-          border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "#4B5563",
+          border: "1px solid var(--t-border, rgba(255,255,255,0.08))", background: "transparent", color: "#4B5563",
         }}>Aucun ✗</button>
       </div>
 
@@ -552,7 +552,7 @@ function CategoriePerfWidget({ assets }) {
               <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                 Valeur sélection · {filtered.length} position(s)
               </div>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#F9FAFB", fontFamily: "'Syne', sans-serif" }}>{fmtEur(totalValue)}</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "var(--t-text, #F9FAFB)", fontFamily: "'Syne', sans-serif" }}>{fmtEur(totalValue)}</div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <div style={S.mini}>
@@ -578,9 +578,9 @@ function CategoriePerfWidget({ assets }) {
           <div>
             <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, marginBottom: 10 }}>Répartition par type</div>
             {byType.filter(t => t.isSelected).map(t => (
-              <div key={t.id} style={{ padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: `1px solid ${t.color}25`, borderRadius: 10, marginBottom: 8 }}>
+              <div key={t.id} style={{ padding: "12px 14px", background: "var(--t-surface, rgba(255,255,255,0.03))", border: `1px solid ${t.color}25`, borderRadius: 10, marginBottom: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 600 }}>{t.emoji} {t.label}</span>
+                  <span style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 600 }}>{t.emoji} {t.label}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: t.perf >= 0 ? "#10B981" : "#EF4444" }}>
                     {t.perf >= 0 ? "+" : ""}{t.perf.toFixed(2)}%
                   </span>
@@ -603,7 +603,7 @@ function CategoriePerfWidget({ assets }) {
               {top3.map(a => (
                 <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.12)", borderRadius: 9, marginBottom: 6 }}>
                   <div>
-                    <div style={{ fontSize: 12, color: "#F9FAFB", fontWeight: 500 }}>{a.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{a.name}</div>
                     <div style={{ fontSize: 11, color: "#6B7280" }}>{a.type} · {fmtEur(a.value)}</div>
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 700, color: "#10B981" }}>+{(a.perf * 100).toFixed(1)}%</span>
@@ -615,7 +615,7 @@ function CategoriePerfWidget({ assets }) {
               {worst3.map(a => (
                 <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.12)", borderRadius: 9, marginBottom: 6 }}>
                   <div>
-                    <div style={{ fontSize: 12, color: "#F9FAFB", fontWeight: 500 }}>{a.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{a.name}</div>
                     <div style={{ fontSize: 11, color: "#6B7280" }}>{a.type} · {fmtEur(a.value)}</div>
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 700, color: a.perf >= 0 ? "#10B981" : "#EF4444" }}>
@@ -649,7 +649,7 @@ function ThemeSelector({ theme, setTheme }) {
       <button onClick={() => setOpen(o => !o)} style={{
         display: "flex", alignItems: "center", gap: 8, padding: "10px 16px",
         borderRadius: 12, cursor: "pointer", fontSize: 13, fontWeight: 500,
-        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+        background: "var(--t-surface, rgba(255,255,255,0.04))", border: "1px solid var(--t-border, rgba(255,255,255,0.1))",
         color: "#9CA3AF", fontFamily: "'DM Sans', sans-serif",
       }}>
         🎨 Thème : {current.emoji} {current.label}
@@ -659,7 +659,7 @@ function ThemeSelector({ theme, setTheme }) {
       {open && (
         <div style={{
           position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 300,
-          background: "#111827", border: "1px solid rgba(255,255,255,0.1)",
+          background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))",
           borderRadius: 14, padding: 10, minWidth: 240,
           boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
         }}>
@@ -821,7 +821,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
       {/* En-tête */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Portefeuille</h2>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Portefeuille</h2>
           <p style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>
             📋 Calculé automatiquement depuis vos transactions — ajoutez vos opérations dans l'onglet <strong style={{ color: "#9CA3AF" }}>Transactions</strong>
           </p>
@@ -854,10 +854,10 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
             const isLoading = loadingIds.includes(a.id);
             const isManual  = !a.ticker || a.manualMode;
             return (
-              <div key={a.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "14px 16px" }}>
+              <div key={a.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "14px 16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, color: "#F9FAFB", fontSize: 15, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</div>
+                    <div style={{ fontWeight: 600, color: "var(--t-text, #F9FAFB)", fontSize: 15, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</div>
                     <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                       <Badge type={a.type} />
                       {isManual
@@ -867,11 +867,11 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
                     </div>
                   </div>
                   <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#F9FAFB" }}>{fmtEur(a.value)}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>{fmtEur(a.value)}</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: a.perf >= 0 ? "#10B981" : "#EF4444" }}>{fmtPct(a.perf)}</div>
                   </div>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, borderTop: "1px solid var(--t-border, rgba(255,255,255,0.06))", paddingTop: 10 }}>
                   <div>
                     <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 2 }}>Qté</div>
                     <div style={{ fontSize: 13, color: "#D1D5DB" }}>{fmt(a.qty, a.qty % 1 === 0 ? 0 : 2)}</div>
@@ -911,8 +911,8 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
               const hasError  = errors[a.id];
               const isManual  = !a.ticker || a.manualMode;
               return (
-                <tr key={a.id} style={{ background: "rgba(255,255,255,0.03)", opacity: isLoading ? 0.6 : 1, transition: "opacity 0.3s" }}>
-                  <td style={{ padding: "14px 12px", borderRadius: "12px 0 0 12px", color: "#F9FAFB", fontWeight: 500, whiteSpace: "nowrap" }}>{a.name}</td>
+                <tr key={a.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", opacity: isLoading ? 0.6 : 1, transition: "opacity 0.3s" }}>
+                  <td style={{ padding: "14px 12px", borderRadius: "12px 0 0 12px", color: "var(--t-text, #F9FAFB)", fontWeight: 500, whiteSpace: "nowrap" }}>{a.name}</td>
                   <td style={{ padding: "14px 12px" }}>
                     {isManual ? (
                       <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 20, background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)", color: "#A78BFA", whiteSpace: "nowrap" }}>✍️ Manuel</span>
@@ -934,7 +934,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
                       <button onClick={() => openManual(a)} title={isManual ? "Mettre à jour le prix" : "Saisir un prix manuel"} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: isManual ? "#A78BFA" : "#4B5563", padding: 0, opacity: 0.8 }}>✏️</button>
                     </div>
                   </td>
-                  <td style={{ padding: "14px 12px", color: "#F9FAFB", fontWeight: 600 }}>{fmtEur(a.value)}</td>
+                  <td style={{ padding: "14px 12px", color: "var(--t-text, #F9FAFB)", fontWeight: 600 }}>{fmtEur(a.value)}</td>
                   <td style={{ padding: "14px 12px", color: a.pnl >= 0 ? "#10B981" : "#EF4444", fontWeight: 600 }}>{a.pnl >= 0 ? "+" : ""}{fmtEur(a.pnl)}</td>
                   <td style={{ padding: "14px 12px", borderRadius: "0 12px 12px 0", color: a.perf >= 0 ? "#10B981" : "#EF4444", fontWeight: 700 }}>{fmtPct(a.perf)}</td>
                 </tr>
@@ -981,7 +981,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
                 onChange={e => setManualInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && saveManual()}
                 autoFocus
-                style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 18, fontWeight: 700, outline: "none", textAlign: "right" }}
+                style={{ flex: 1, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "12px 16px", color: "var(--t-text, #F9FAFB)", fontSize: 18, fontWeight: 700, outline: "none", textAlign: "right" }}
               />
               <span style={{ fontSize: 16, color: "#6B7280" }}>€</span>
             </div>
@@ -989,7 +989,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
 
           {/* Aperçu de l'impact */}
           {manualInput && !isNaN(parseFloat(manualInput)) && (
-            <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.03)", borderRadius: 10, marginBottom: 16 }}>
+            <div style={{ padding: "12px 16px", background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 10, marginBottom: 16 }}>
               <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 8 }}>Aperçu après mise à jour</div>
               {(() => {
                 const newPrice  = parseFloat(manualInput);
@@ -1000,7 +1000,7 @@ function Portfolio({ portfolio, setCurrentPrices, refreshAll, refreshOne, loadin
                   <div style={{ display: "flex", gap: 24 }}>
                     <div>
                       <div style={{ fontSize: 11, color: "#6B7280" }}>Valeur position</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "#F9FAFB" }}>{fmtEur(newValue)}</div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>{fmtEur(newValue)}</div>
                     </div>
                     <div>
                       <div style={{ fontSize: 11, color: "#6B7280" }}>Plus-value</div>
@@ -1103,7 +1103,7 @@ function Transactions({ transactions, setTransactions }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Transactions</h2>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Transactions</h2>
           <p style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>
             ✅ Chaque transaction met à jour <strong style={{ color: "#9CA3AF" }}>automatiquement</strong> votre portefeuille
           </p>
@@ -1144,9 +1144,9 @@ function Transactions({ transactions, setTransactions }) {
           </thead>
           <tbody>
             {sorted.map(t => (
-              <tr key={t.id} style={{ background: "rgba(255,255,255,0.03)" }}>
+              <tr key={t.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))" }}>
                 <td style={{ padding: "12px 12px", borderRadius: "12px 0 0 12px", color: "#9CA3AF", fontSize: 13 }}>{t.date}</td>
-                <td style={{ padding: "12px 12px", color: "#F9FAFB", fontWeight: 500 }}>{t.asset}</td>
+                <td style={{ padding: "12px 12px", color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{t.asset}</td>
                 <td style={{ padding: "12px 12px" }}>
                   {t.manualMode
                     ? <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 20, background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.25)", color: "#A78BFA" }}>✍️ Manuel</span>
@@ -1162,7 +1162,7 @@ function Transactions({ transactions, setTransactions }) {
                 <td style={{ padding: "12px 12px", color: "#D1D5DB" }}>{fmt(t.qty, 4)}</td>
                 <td style={{ padding: "12px 12px", color: "#D1D5DB" }}>{fmtEur(t.price)}</td>
                 <td style={{ padding: "12px 12px", color: "#EF4444", fontSize: 13 }}>{fmtEur(t.fees || 0)}</td>
-                <td style={{ padding: "12px 12px", color: "#F9FAFB", fontWeight: 600 }}>{fmtEur(t.total)}</td>
+                <td style={{ padding: "12px 12px", color: "var(--t-text, #F9FAFB)", fontWeight: 600 }}>{fmtEur(t.total)}</td>
                 <td style={{ padding: "12px 12px", color: "#9CA3AF", fontSize: 13 }}>{t.broker}</td>
                 <td style={{ padding: "12px 12px", borderRadius: "0 12px 12px 0", whiteSpace: "nowrap" }}>
                   <button onClick={() => openEdit(t)} title="Modifier" style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", fontSize: 15, marginRight: 6 }}>✏️</button>
@@ -1186,7 +1186,7 @@ function Transactions({ transactions, setTransactions }) {
               value={form.asset}
               onChange={e => handleAssetChange(e.target.value)}
               placeholder="ex: Air Liquide, S&P 500 (Acc)..."
-              style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", color: "#F9FAFB", fontSize: 14, outline: "none" }}
+              style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, padding: "10px 14px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none" }}
             />
             <datalist id="asset-suggestions">
               {knownAssets.map(a => <option key={a.name} value={a.name} />)}
@@ -1219,7 +1219,7 @@ function Transactions({ transactions, setTransactions }) {
               onChange={e => setForm(f => ({ ...f, ticker: e.target.value.toUpperCase() }))}
               disabled={form.manualMode}
               placeholder={form.manualMode ? "Désactivé (mode manuel)" : "ex: AI.PA, RNO.PA, AAPL..."}
-              style={{ width: "100%", fontFamily: "'DM Mono', monospace", fontSize: 14, background: form.manualMode ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", color: form.manualMode ? "#4B5563" : "#60A5FA", outline: "none", cursor: form.manualMode ? "not-allowed" : "text" }}
+              style={{ width: "100%", fontFamily: "'DM Mono', monospace", fontSize: 14, background: form.manualMode ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, padding: "10px 14px", color: form.manualMode ? "#4B5563" : "#60A5FA", outline: "none", cursor: form.manualMode ? "not-allowed" : "text" }}
             />
 
             {!form.manualMode && (
@@ -1402,7 +1402,7 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Analyse & Conseils</h2>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Analyse & Conseils</h2>
           <p style={{ color: "#6B7280", fontSize: 13, marginTop: 4 }}>⚠️ À titre informatif uniquement — pas de conseil financier réglementé.</p>
         </div>
       </div>
@@ -1411,7 +1411,7 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, marginBottom: 24 }}>
 
         {/* Score */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24, textAlign: "center" }}>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24, textAlign: "center" }}>
           <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 12 }}>Score de santé financière</div>
           <div style={{ position: "relative", width: 120, height: 120, margin: "0 auto 16px" }}>
             <svg width="120" height="120" style={{ transform: "rotate(-90deg)" }}>
@@ -1440,8 +1440,8 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
 
         {/* Profil + résumé données */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, color: "#F9FAFB", marginBottom: 14 }}>🎯 Votre profil</div>
+          <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 20 }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 14 }}>🎯 Votre profil</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               <Select label="Objectif" value={objective} onChange={e => setObjective(e.target.value)}>
                 <option value="croissance">Croissance</option>
@@ -1462,8 +1462,8 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
           </div>
 
           {/* Résumé données analysées */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, color: "#F9FAFB", marginBottom: 14 }}>📊 Données analysées</div>
+          <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 20 }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 14 }}>📊 Données analysées</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
               {[
                 { label: "Portefeuille",  value: fmtEur(totalBourse),    sub: `${assets.length} lignes`, color: "#60A5FA" },
@@ -1471,9 +1471,9 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
                 { label: "Ép. mensuelle", value: avgRev > 0 ? `${avgEpargne >= 0 ? "+" : ""}${fmtEur(avgEpargne)}` : "–", sub: avgRev > 0 ? `${tauxEpargne.toFixed(0)}% du revenu` : "Pas de données", color: avgEpargne >= 0 ? "#A78BFA" : "#F87171" },
                 { label: "Dépenses/mois", value: avgDep > 0 ? fmtEur(avgDep) : "–",  sub: avgDep > 0 ? "moyenne 3 mois" : "Pas de données", color: "#F97316" },
                 { label: "Objectifs",     value: `${objAtteints}/${objectifs.length}`, sub: "atteints", color: "#F59E0B" },
-                { label: "Patrimoine",    value: fmtEur(totalPatrimoine), sub: "total", color: "#FFFFFF" },
+                { label: "Patrimoine",    value: fmtEur(totalPatrimoine), sub: "total", color: "var(--t-text, #FFFFFF)" },
               ].map(k => (
-                <div key={k.label} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 10, padding: "10px 12px" }}>
+                <div key={k.label} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 10, padding: "10px 12px" }}>
                   <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 4 }}>{k.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: k.color }}>{k.value}</div>
                   <div style={{ fontSize: 10, color: "#4B5563" }}>{k.sub}</div>
@@ -1487,7 +1487,7 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
       {/* Alertes automatiques */}
       {alertes.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 12 }}>⚡ Alertes automatiques</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 12 }}>⚡ Alertes automatiques</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {alertes.map((a, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px", borderRadius: 10, background: a.type === "success" ? "rgba(16,185,129,0.08)" : "rgba(245,158,11,0.08)", border: `1px solid ${a.type === "success" ? "rgba(16,185,129,0.2)" : "rgba(245,158,11,0.2)"}` }}>
@@ -1502,14 +1502,14 @@ function Recommendations({ portfolio, depenses, revenus, livrets, objectifs }) {
       {/* Recommandations croisées */}
       {analyzed && (
         <div>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "#F9FAFB", marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 12 }}>
             🤖 Recommandations personnalisées — {objective === "croissance" ? "Croissance" : objective === "revenus" ? "Revenus" : objective === "retraite" ? "Retraite" : "Sécurisation"} · Risque {risk} · {horizon} ans
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {recos.map((r, i) => (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "16px 20px", display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div key={i} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 14, padding: "16px 20px", display: "flex", gap: 16, alignItems: "flex-start" }}>
                 <div style={{ flexShrink: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#F9FAFB", marginBottom: 4 }}>{r.cat}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--t-text, #F9FAFB)", marginBottom: 4 }}>{r.cat}</div>
                   <div style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: `${PRIORITY_COLORS[r.priority]}20`, color: PRIORITY_COLORS[r.priority], border: `1px solid ${PRIORITY_COLORS[r.priority]}40`, whiteSpace: "nowrap" }}>
                     {PRIORITY_LABELS[r.priority]}
                   </div>
@@ -1692,7 +1692,7 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
     <div>
       {/* En-tête */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Budget mensuel</h2>
+        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Budget mensuel</h2>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <Select label="" value={filterMonth} onChange={e => setFilterMonth(e.target.value)} style={{ marginBottom: 0, width: 180 }}>
             {allMonths.map(m => <option key={m} value={m}>{new Date(m + "-02").toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</option>)}
@@ -1723,8 +1723,8 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
         {/* Revenus du mois */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>
             💼 Revenus du mois
             <span style={{ fontSize: 13, color: "#10B981", marginLeft: 12 }}>{fmtEur(totalRevenus)}</span>
           </div>
@@ -1736,11 +1736,11 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
             revenusMonth.map(r => {
               const cat = REVENUE_CATEGORIES.find(c => c.id === r.categorie);
               return (
-                <div key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 10 }}>
+                <div key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, padding: "10px 14px", background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 18 }}>{cat?.emoji}</span>
                     <div>
-                      <div style={{ fontSize: 14, color: "#F9FAFB", fontWeight: 500 }}>{r.label}</div>
+                      <div style={{ fontSize: 14, color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{r.label}</div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <span style={{ fontSize: 11, color: cat?.color || "#6B7280" }}>{cat?.label}</span>
                         {r.recurrent && <span style={{ fontSize: 10, color: "#6B7280", background: "rgba(255,255,255,0.06)", padding: "1px 6px", borderRadius: 10 }}>🔄 récurrent</span>}
@@ -1758,13 +1758,13 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
         </div>
 
         {/* Graphique 6 mois */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>📊 Revenus vs Dépenses (6 mois)</div>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>📊 Revenus vs Dépenses (6 mois)</div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={last6} barGap={4}>
               <XAxis dataKey="month" tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}€`} />
-              <Tooltip contentStyle={{ background: "#1F2937", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#F9FAFB" }} formatter={(v, n) => [fmtEur(v), n === "revenus" ? "Revenus" : "Dépenses"]} />
+              <Tooltip contentStyle={{ background: "var(--t-sidebar, #1F2937)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, color: "var(--t-text, #F9FAFB)" }} formatter={(v, n) => [fmtEur(v), n === "revenus" ? "Revenus" : "Dépenses"]} />
               <Bar dataKey="revenus"  fill="#10B981" radius={[4,4,0,0]} />
               <Bar dataKey="depenses" fill="#EF4444" radius={[4,4,0,0]} />
             </BarChart>
@@ -1778,7 +1778,7 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
 
       {/* Solde visuel */}
       <div style={{ background: solde >= 0 ? "rgba(16,185,129,0.05)" : "rgba(239,68,68,0.05)", border: `1px solid ${solde >= 0 ? "#10B98130" : "#EF444430"}`, borderRadius: 16, padding: 24 }}>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>⚖️ Synthèse mensuelle</div>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>⚖️ Synthèse mensuelle</div>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -1791,12 +1791,12 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
             </div>
             <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "12px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "#F9FAFB", fontSize: 16, fontWeight: 700 }}>Solde</span>
+              <span style={{ color: "var(--t-text, #F9FAFB)", fontSize: 16, fontWeight: 700 }}>Solde</span>
               <span style={{ color: solde >= 0 ? "#10B981" : "#EF4444", fontSize: 20, fontWeight: 800 }}>{solde >= 0 ? "+" : ""}{fmtEur(solde)}</span>
             </div>
           </div>
           {totalRevenus > 0 && (
-            <div style={{ textAlign: "center", padding: "16px 32px", background: "rgba(255,255,255,0.03)", borderRadius: 12 }}>
+            <div style={{ textAlign: "center", padding: "16px 32px", background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 12 }}>
               <div style={{ fontSize: 32, fontWeight: 800, fontFamily: "'Syne', sans-serif", color: tauxEpargne >= 0.2 ? "#10B981" : tauxEpargne >= 0.1 ? "#F59E0B" : "#EF4444" }}>
                 {(tauxEpargne * 100).toFixed(1)}%
               </div>
@@ -1818,7 +1818,7 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
           </Select>
           <Input label="Montant (€)" type="number" value={form.montant} onChange={e => setForm(f => ({ ...f, montant: e.target.value }))} placeholder="0.00" />
           <Input label="Note (optionnel)" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Détail..." />
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, padding: "10px 14px", background: "rgba(255,255,255,0.04)", borderRadius: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, padding: "10px 14px", background: "var(--t-surface, rgba(255,255,255,0.04))", borderRadius: 10 }}>
             <input type="checkbox" id="recurrent" checked={form.recurrent} onChange={e => setForm(f => ({ ...f, recurrent: e.target.checked }))} style={{ width: 16, height: 16, cursor: "pointer" }} />
             <label htmlFor="recurrent" style={{ color: "#D1D5DB", fontSize: 14, cursor: "pointer" }}>
               🔄 Revenu récurrent (proposé automatiquement chaque mois)
@@ -1862,10 +1862,10 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
                   <div key={item.id} onClick={() => {
                     if (importPreviewTab === "depenses") setSelectedDep(s => ({ ...s, [item.id]: !s[item.id] }));
                     else setSelectedRev(s => ({ ...s, [item.id]: !s[item.id] }));
-                  }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, marginBottom: 4, background: (importPreviewTab === "depenses" ? selectedDep[item.id] : selectedRev[item.id]) ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", cursor: "pointer" }}>
+                  }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, marginBottom: 4, background: (importPreviewTab === "depenses" ? selectedDep[item.id] : selectedRev[item.id]) ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.03)", border: "1px solid var(--t-border, rgba(255,255,255,0.06))", cursor: "pointer" }}>
                     <input type="checkbox" checked={!!(importPreviewTab === "depenses" ? selectedDep[item.id] : selectedRev[item.id])} onChange={() => {}} style={{ flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, color: "#F9FAFB", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
+                      <div style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
                       <div style={{ fontSize: 11, color: "#6B7280" }}>{item.date}</div>
                     </div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: importPreviewTab === "depenses" ? "#F87171" : "#34D399", flexShrink: 0 }}>
@@ -2091,7 +2091,7 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
     <div>
       {/* En-tête */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Dépenses</h2>
+        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Dépenses</h2>
         <div style={{ display: "flex", gap: 10 }}>
           <Btn variant="ghost" onClick={() => { setBudgetForm({ ...budgets }); setShowBudgetModal(true); }}>🎯 Budgets</Btn>
           <Btn variant="ghost" onClick={() => { setImportStep("upload"); setImportDepenses([]); setImportRevenus([]); setImportError(""); setShowImportModal(true); }}>📂 Importer relevé</Btn>
@@ -2120,8 +2120,8 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
         {/* Barres de budget */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 20 }}>🎯 Suivi des budgets</div>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 20 }}>🎯 Suivi des budgets</div>
           {byCategorie.map(cat => (
             <div key={cat.id} style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
@@ -2145,14 +2145,14 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
         </div>
 
         {/* Répartition graphique */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>📊 Répartition</div>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>📊 Répartition</div>
           {byCategorie.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={byCategorie} layout="vertical" margin={{ left: 80 }}>
                 <XAxis type="number" tick={{ fill: "#9CA3AF", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}€`} />
                 <YAxis type="category" dataKey="label" tick={{ fill: "#D1D5DB", fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: "#1F2937", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#F9FAFB" }} formatter={v => [fmtEur(v), "Dépensé"]} />
+                <Tooltip contentStyle={{ background: "var(--t-sidebar, #1F2937)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, color: "var(--t-text, #F9FAFB)" }} formatter={v => [fmtEur(v), "Dépensé"]} />
                 <Bar dataKey="spent" radius={[0, 4, 4, 0]}>
                   {byCategorie.map(c => <Cell key={c.id} fill={c.color} />)}
                 </Bar>
@@ -2165,8 +2165,8 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
       </div>
 
       {/* Liste des dépenses */}
-      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>
+      <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>
           📋 Détail des dépenses {filtered.length > 0 && <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 400 }}>({filtered.length})</span>}
         </div>
         {filtered.length === 0 ? (
@@ -2187,16 +2187,16 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
               {[...filtered].sort((a,b) => b.date.localeCompare(a.date)).map(d => {
                 const cat = EXPENSE_CATEGORIES.find(c => c.id === d.categorie);
                 return (
-                  <tr key={d.id} style={{ background: "rgba(255,255,255,0.02)" }}>
+                  <tr key={d.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.02))" }}>
                     <td style={{ padding: "10px 12px", borderRadius: "10px 0 0 10px", color: "#9CA3AF", fontSize: 13 }}>{d.date}</td>
-                    <td style={{ padding: "10px 12px", color: "#F9FAFB", fontWeight: 500 }}>{d.label}</td>
+                    <td style={{ padding: "10px 12px", color: "var(--t-text, #F9FAFB)", fontWeight: 500 }}>{d.label}</td>
                     <td style={{ padding: "10px 12px" }}>
                       <select
                         value={d.categorie}
                         onChange={e => setDepenses(ds => ds.map(x => x.id === d.id ? { ...x, categorie: e.target.value } : x))}
                         style={{ background: (cat?.color || "#6B7280") + "20", color: cat?.color || "#6B7280", border: `1px solid ${(cat?.color || "#6B7280")}40`, borderRadius: 20, padding: "3px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer", outline: "none" }}
                       >
-                        {EXPENSE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "#1F2937", color: "#F9FAFB" }}>{c.emoji} {c.label}</option>)}
+                        {EXPENSE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "var(--t-sidebar, #1F2937)", color: "var(--t-text, #F9FAFB)" }}>{c.emoji} {c.label}</option>)}
                       </select>
                     </td>
                     <td style={{ padding: "10px 12px", color: "#6B7280", fontSize: 13 }}>{d.note || "—"}</td>
@@ -2240,7 +2240,7 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                 type="number"
                 value={budgetForm[cat.id] || ""}
                 onChange={e => setBudgetForm(f => ({ ...f, [cat.id]: parseFloat(e.target.value) || 0 }))}
-                style={{ flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 12px", color: "#F9FAFB", fontSize: 14, outline: "none" }}
+                style={{ flex: 1, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 12px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none" }}
                 placeholder="0"
               />
               <span style={{ color: "#6B7280", fontSize: 13 }}>€</span>
@@ -2280,7 +2280,7 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
           {importStep === "analyzing" && (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>🤖</div>
-              <div style={{ color: "#F9FAFB", fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Analyse en cours...</div>
+              <div style={{ color: "var(--t-text, #F9FAFB)", fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Analyse en cours...</div>
               <div style={{ color: "#9CA3AF", fontSize: 14 }}>L'IA lit votre relevé et catégorise chaque dépense</div>
             </div>
           )}
@@ -2313,9 +2313,9 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                     <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: selectedDep[r.id] ? "rgba(239,68,68,0.08)" : "rgba(255,255,255,0.02)", border: `1px solid ${selectedDep[r.id] ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.06)"}`, borderRadius: 10, marginBottom: 6 }}>
                       <input type="checkbox" checked={!!selectedDep[r.id]} onChange={() => setSelectedDep(s => ({ ...s, [r.id]: !s[r.id] }))} style={{ width: 15, height: 15, cursor: "pointer", flexShrink: 0 }} />
                       <span style={{ fontSize: 12, color: "#9CA3AF", width: 86, flexShrink: 0 }}>{r.date}</span>
-                      <span style={{ flex: 1, fontSize: 13, color: "#F9FAFB", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
+                      <span style={{ flex: 1, fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
                       <select value={r.categorie} onChange={e => setImportDepenses(rows => rows.map(x => x.id === r.id ? { ...x, categorie: e.target.value } : x))} style={{ background: (cat?.color||"#6B7280")+"20", color: cat?.color||"#6B7280", border: `1px solid ${(cat?.color||"#6B7280")}40`, borderRadius: 8, padding: "3px 8px", fontSize: 11, cursor: "pointer", outline: "none", flexShrink: 0 }}>
-                        {EXPENSE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "#1F2937", color: "#F9FAFB" }}>{c.emoji} {c.label}</option>)}
+                        {EXPENSE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "var(--t-sidebar, #1F2937)", color: "var(--t-text, #F9FAFB)" }}>{c.emoji} {c.label}</option>)}
                       </select>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#EF4444", flexShrink: 0, width: 60, textAlign: "right" }}>{fmtEur(r.montant)}</span>
                     </div>
@@ -2327,9 +2327,9 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                     <div key={r.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: selectedRev[r.id] ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.02)", border: `1px solid ${selectedRev[r.id] ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.06)"}`, borderRadius: 10, marginBottom: 6 }}>
                       <input type="checkbox" checked={!!selectedRev[r.id]} onChange={() => setSelectedRev(s => ({ ...s, [r.id]: !s[r.id] }))} style={{ width: 15, height: 15, cursor: "pointer", flexShrink: 0 }} />
                       <span style={{ fontSize: 12, color: "#9CA3AF", width: 86, flexShrink: 0 }}>{r.date}</span>
-                      <span style={{ flex: 1, fontSize: 13, color: "#F9FAFB", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
+                      <span style={{ flex: 1, fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
                       <select value={r.categorie} onChange={e => setImportRevenus(rows => rows.map(x => x.id === r.id ? { ...x, categorie: e.target.value } : x))} style={{ background: (cat?.color||"#6B7280")+"20", color: cat?.color||"#6B7280", border: `1px solid ${(cat?.color||"#6B7280")}40`, borderRadius: 8, padding: "3px 8px", fontSize: 11, cursor: "pointer", outline: "none", flexShrink: 0 }}>
-                        {REVENUE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "#1F2937", color: "#F9FAFB" }}>{c.emoji} {c.label}</option>)}
+                        {REVENUE_CATEGORIES.map(c => <option key={c.id} value={c.id} style={{ background: "var(--t-sidebar, #1F2937)", color: "var(--t-text, #F9FAFB)" }}>{c.emoji} {c.label}</option>)}
                       </select>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#10B981", flexShrink: 0, width: 60, textAlign: "right" }}>+{fmtEur(r.montant)}</span>
                     </div>
@@ -2339,7 +2339,7 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                 {importPreviewTab === "revenus"  && importRevenus.length  === 0 && <div style={{ color: "#6B7280", textAlign: "center", padding: 24 }}>Aucun revenu détecté</div>}
               </div>
 
-              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 10, padding: "10px 14px", marginBottom: 14, display: "flex", justifyContent: "space-around", fontSize: 13 }}>
+              <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 10, padding: "10px 14px", marginBottom: 14, display: "flex", justifyContent: "space-around", fontSize: 13 }}>
                 <span style={{ color: "#EF4444" }}>💸 {Object.values(selectedDep).filter(Boolean).length} dépense(s) sélectionnée(s)</span>
                 <span style={{ color: "#10B981" }}>💰 {Object.values(selectedRev).filter(Boolean).length} revenu(s) sélectionné(s)</span>
               </div>
@@ -2422,7 +2422,7 @@ function Epargne({ livrets, setLivrets, portfolio }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Épargne & Livrets</h2>
+        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Épargne & Livrets</h2>
         <Btn onClick={openAdd}>+ Ajouter un livret</Btn>
       </div>
 
@@ -2437,8 +2437,8 @@ function Epargne({ livrets, setLivrets, portfolio }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, marginBottom: 24 }}>
 
         {/* Répartition patrimoine */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>🥧 Répartition du patrimoine</div>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>🥧 Répartition du patrimoine</div>
           {patrimoineData.length > 0 ? (
             <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
               <ResponsiveContainer width={170} height={170}>
@@ -2446,7 +2446,7 @@ function Epargne({ livrets, setLivrets, portfolio }) {
                   <Pie data={patrimoineData} dataKey="value" cx="50%" cy="50%" outerRadius={80} innerRadius={36}>
                     {patrimoineData.map((d, i) => <Cell key={i} fill={d.color} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "#1F2937", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#F9FAFB" }} formatter={(v, n) => [fmtEur(v), n]} />
+                  <Tooltip contentStyle={{ background: "var(--t-sidebar, #1F2937)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 8, color: "var(--t-text, #F9FAFB)" }} formatter={(v, n) => [fmtEur(v), n]} />
                 </PieChart>
               </ResponsiveContainer>
               <div style={{ flex: 1, maxHeight: 200, overflowY: "auto" }}>
@@ -2455,7 +2455,7 @@ function Epargne({ livrets, setLivrets, portfolio }) {
                     <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                       <div style={{ width: 10, height: 10, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{d.name}</div>
+                        <div style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{d.name}</div>
                         <div style={{ fontSize: 11, color: "#6B7280" }}>{d.sub}</div>
                       </div>
                     </div>
@@ -2465,9 +2465,9 @@ function Epargne({ livrets, setLivrets, portfolio }) {
                     </div>
                   </div>
                 ))}
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 8, marginTop: 4, display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 700 }}>Total patrimoine</span>
-                  <span style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 700 }}>{fmtEur(totalPatrimoine)}</span>
+                <div style={{ borderTop: "1px solid var(--t-border, rgba(255,255,255,0.08))", paddingTop: 8, marginTop: 4, display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 700 }}>Total patrimoine</span>
+                  <span style={{ fontSize: 13, color: "var(--t-text, #F9FAFB)", fontWeight: 700 }}>{fmtEur(totalPatrimoine)}</span>
                 </div>
               </div>
             </div>
@@ -2477,8 +2477,8 @@ function Epargne({ livrets, setLivrets, portfolio }) {
         </div>
 
         {/* Simulation intérêts */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>📈 Projection des intérêts</div>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>📈 Projection des intérêts</div>
           {livrets.length > 0 ? (
             <div>
               {[1, 2, 3, 5].map(ans => {
@@ -2504,8 +2504,8 @@ function Epargne({ livrets, setLivrets, portfolio }) {
       </div>
 
       {/* Liste des livrets */}
-      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "#F9FAFB", marginBottom: 16 }}>🏦 Mes livrets</div>
+      <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 16, padding: 24 }}>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 600, color: "var(--t-text, #F9FAFB)", marginBottom: 16 }}>🏦 Mes livrets</div>
         {livrets.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px 0", color: "#6B7280" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🏦</div>
@@ -2519,12 +2519,12 @@ function Epargne({ livrets, setLivrets, portfolio }) {
               const plafond  = type.plafond;
               const pctPlafond = plafond ? (parseFloat(l.solde) / plafond) * 100 : null;
               return (
-                <div key={l.id} style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${type.color}30`, borderRadius: 14, padding: 20 }}>
+                <div key={l.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: `1px solid ${type.color}30`, borderRadius: 14, padding: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <span style={{ fontSize: 22 }}>{type.emoji}</span>
                       <div>
-                        <div style={{ fontWeight: 700, color: "#F9FAFB", fontSize: 15 }}>{l.nom || type.label}</div>
+                        <div style={{ fontWeight: 700, color: "var(--t-text, #F9FAFB)", fontSize: 15 }}>{l.nom || type.label}</div>
                         <div style={{ fontSize: 11, color: "#6B7280" }}>{l.banque || type.label}</div>
                       </div>
                     </div>
@@ -2667,7 +2667,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "#F9FAFB" }}>Objectifs financiers</h2>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 700, color: "var(--t-text, #F9FAFB)" }}>Objectifs financiers</h2>
           <p style={{ color: "#6B7280", fontSize: 14, marginTop: 4 }}>Définissez vos cibles et suivez votre progression en temps réel.</p>
         </div>
         <Btn onClick={openAdd}>+ Nouvel objectif</Btn>
@@ -2694,7 +2694,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
 
       {/* Liste des objectifs */}
       {objectifs.length === 0 ? (
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 20, padding: "60px 0", textAlign: "center" }}>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.02))", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: 20, padding: "60px 0", textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🎯</div>
           <div style={{ color: "#9CA3AF", fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Aucun objectif défini</div>
           <div style={{ color: "#6B7280", fontSize: 14, marginBottom: 24 }}>Créez votre premier objectif pour visualiser votre progression</div>
@@ -2712,7 +2712,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
             const atteint   = pct >= 100;
 
             return (
-              <div key={obj.id} style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${atteint ? type.color + "50" : "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 24, position: "relative", overflow: "hidden" }}>
+              <div key={obj.id} style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: `1px solid ${atteint ? type.color + "50" : "rgba(255,255,255,0.08)"}`, borderRadius: 16, padding: 24, position: "relative", overflow: "hidden" }}>
                 {/* Fond coloré subtil */}
                 <div style={{ position: "absolute", top: 0, left: 0, width: `${pct}%`, height: "100%", background: `${type.color}06`, transition: "width 0.8s ease", pointerEvents: "none" }} />
 
@@ -2726,7 +2726,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                       <div>
-                        <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 17, color: "#F9FAFB" }}>{obj.nom || type.label}</div>
+                        <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--t-text, #F9FAFB)" }}>{obj.nom || type.label}</div>
                         <div style={{ fontSize: 12, color: type.color, marginTop: 2 }}>{type.emoji} {type.label}</div>
                       </div>
                       <div style={{ display: "flex", align: "center", gap: 6 }}>
@@ -2758,7 +2758,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
                           type="number"
                           value={actuel}
                           onChange={e => updateActuel(obj.id, e.target.value)}
-                          style={{ width: 90, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "3px 8px", color: "#F9FAFB", fontSize: 13, outline: "none" }}
+                          style={{ width: 90, background: "rgba(255,255,255,0.06)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 6, padding: "3px 8px", color: "var(--t-text, #F9FAFB)", fontSize: 13, outline: "none" }}
                         />
                         <span style={{ fontSize: 12, color: "#6B7280" }}>€</span>
                       </div>
@@ -2778,7 +2778,7 @@ function Objectifs({ objectifs, setObjectifs, depenses, revenus, portfolio, livr
 
                     {/* Projection détaillée */}
                     {!atteint && (
-                      <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--t-surface, rgba(255,255,255,0.03))", borderRadius: 10, border: "1px solid var(--t-border, rgba(255,255,255,0.06))" }}>
                         {proj.mois !== null ? (
                           <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
                             <div>
@@ -2888,7 +2888,7 @@ function SuggestionModal({ user, onClose }) {
       {done ? (
         <div style={{ textAlign: "center", padding: "32px 0" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#F9FAFB", marginBottom: 8 }}>Merci pour votre suggestion !</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--t-text, #F9FAFB)", marginBottom: 8 }}>Merci pour votre suggestion !</div>
           <div style={{ color: "#9CA3AF", fontSize: 14 }}>Votre retour a bien été enregistré et sera examiné prochainement.</div>
         </div>
       ) : (
@@ -2924,8 +2924,8 @@ function SuggestionModal({ user, onClose }) {
               placeholder="Décrivez votre idée ou le problème rencontré..."
               rows={5}
               style={{
-                width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14,
+                width: "100%", background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))",
+                borderRadius: 10, padding: "12px 16px", color: "var(--t-text, #F9FAFB)", fontSize: 14,
                 outline: "none", resize: "vertical", fontFamily: "'DM Sans', sans-serif",
                 lineHeight: 1.5,
               }}
@@ -2994,11 +2994,11 @@ function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
       <div style={{ width: "100%", maxWidth: 420 }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>📈</div>
-          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 26, fontWeight: 800, color: "#F9FAFB", letterSpacing: "-0.5px" }}>MonPortefeuille</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 26, fontWeight: 800, color: "var(--t-text, #F9FAFB)", letterSpacing: "-0.5px" }}>MonPortefeuille</div>
           <div style={{ fontSize: 13, color: "#6B7280", marginTop: 6 }}>Votre suivi financier personnel</div>
         </div>
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: 32 }}>
-          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F9FAFB", marginBottom: 24 }}>
+        <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px solid var(--t-border, rgba(255,255,255,0.08))", borderRadius: 20, padding: 32 }}>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "var(--t-text, #F9FAFB)", marginBottom: 24 }}>
             {mode === "login" ? "Connexion" : mode === "register" ? "Créer un compte" : mode === "reset" ? "Mot de passe oublié" : "Nouveau mot de passe"}
           </h2>
 
@@ -3007,7 +3007,7 @@ function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Adresse e-mail</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="vous@exemple.fr"
-                style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
+                style={{ width: "100%", background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 10, padding: "12px 16px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none" }} />
             </div>
           )}
 
@@ -3016,7 +3016,7 @@ function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
             <div style={{ marginBottom: 24 }}>
               <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Mot de passe</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="••••••••"
-                style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
+                style={{ width: "100%", background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 10, padding: "12px 16px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none" }} />
             </div>
           )}
 
@@ -3025,7 +3025,7 @@ function AuthPage({ recovery = false, onPasswordUpdated = () => {} }) {
             <div style={{ marginBottom: 24 }}>
               <label style={{ fontSize: 12, color: "#9CA3AF", display: "block", marginBottom: 6 }}>Nouveau mot de passe</label>
               <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="Minimum 6 caractères"
-                style={{ width: "100%", background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "12px 16px", color: "#F9FAFB", fontSize: 14, outline: "none" }} />
+                style={{ width: "100%", background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 10, padding: "12px 16px", color: "var(--t-text, #F9FAFB)", fontSize: 14, outline: "none" }} />
             </div>
           )}
 
@@ -3134,10 +3134,27 @@ export default function App() {
 
   const [theme, setTheme] = useState(() => localStorage.getItem("mp_theme") || "dark");
 
-  // Applique le thème au body
+  // Tokens de thème (recalculés à chaque changement)
+  const T = {
+    dark:   { bg:"#070B14",  surface:"rgba(255,255,255,0.03)", surface2:"rgba(255,255,255,0.06)", border:"rgba(255,255,255,0.08)",  sidebar:"rgba(7,11,20,0.97)",   text:"#F9FAFB", textSub:"#9CA3AF", textMuted:"#6B7280", bottomNav:"rgba(7,11,20,0.97)"   },
+    night:  { bg:"#060818",  surface:"rgba(255,255,255,0.04)", surface2:"rgba(99,102,241,0.08)",  border:"rgba(99,102,241,0.12)",   sidebar:"rgba(6,8,24,0.97)",    text:"#F9FAFB", textSub:"#A5B4FC", textMuted:"#6B7280", bottomNav:"rgba(6,8,24,0.97)"    },
+    light:  { bg:"#F1F5F9",  surface:"rgba(0,0,0,0.04)",       surface2:"rgba(0,0,0,0.06)",       border:"rgba(0,0,0,0.10)",        sidebar:"rgba(255,255,255,0.97)",text:"#0F172A", textSub:"#475569", textMuted:"#94A3B8", bottomNav:"rgba(248,250,252,0.97)" },
+    rose:   { bg:"#1a0812",  surface:"rgba(236,72,153,0.06)",   surface2:"rgba(236,72,153,0.10)",  border:"rgba(236,72,153,0.12)",   sidebar:"rgba(26,8,18,0.97)",   text:"#FDF2F8", textSub:"#F9A8D4", textMuted:"#9D174D", bottomNav:"rgba(26,8,18,0.97)"   },
+    forest: { bg:"#061309",  surface:"rgba(16,185,129,0.06)",   surface2:"rgba(16,185,129,0.09)",  border:"rgba(16,185,129,0.12)",   sidebar:"rgba(6,19,9,0.97)",    text:"#F0FDF4", textSub:"#6EE7B7", textMuted:"#065F46", bottomNav:"rgba(6,19,9,0.97)"    },
+    sunset: { bg:"#120800",  surface:"rgba(245,158,11,0.06)",   surface2:"rgba(245,158,11,0.09)",  border:"rgba(245,158,11,0.10)",   sidebar:"rgba(18,8,0,0.97)",    text:"#FFFBEB", textSub:"#FCD34D", textMuted:"#92400E", bottomNav:"rgba(18,8,0,0.97)"    },
+  }[theme] || {
+    bg:"#070B14", surface:"rgba(255,255,255,0.03)", surface2:"rgba(255,255,255,0.06)", border:"rgba(255,255,255,0.08)", sidebar:"rgba(7,11,20,0.97)", text:"#F9FAFB", textSub:"#9CA3AF", textMuted:"#6B7280", bottomNav:"rgba(7,11,20,0.97)"
+  };
+
+  // Applique le thème au body + CSS vars
   useEffect(() => {
-    const THEME_BG = { dark:"#070B14", night:"#060818", light:"#F8FAFC", rose:"#1a0812", forest:"#061309", sunset:"#120800" };
-    document.body.style.background = THEME_BG[theme] || "#070B14";
+    document.body.style.background = T.bg;
+    document.documentElement.style.setProperty("--t-bg",      T.bg);
+    document.documentElement.style.setProperty("--t-surface",  T.surface);
+    document.documentElement.style.setProperty("--t-border",   T.border);
+    document.documentElement.style.setProperty("--t-text",     T.text);
+    document.documentElement.style.setProperty("--t-text-sub", T.textSub);
+    document.documentElement.style.setProperty("--t-sidebar",  T.sidebar);
     localStorage.setItem("mp_theme", theme);
   }, [theme]);
 
@@ -3257,7 +3274,7 @@ export default function App() {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-        select option { background: #1F2937; }
+        select option { background: var(--t-bg, #1F2937); color: var(--t-text, #F9FAFB); }
 
         /* ── SIDEBAR DESKTOP ── */
         .sidebar {
@@ -3311,8 +3328,8 @@ export default function App() {
           .bottom-nav {
             display: flex !important;
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-            background: rgba(7,11,20,0.97); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.08);
+            background: var(--t-sidebar, rgba(7,11,20,0.97)); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--t-border, rgba(255,255,255,0.08));
             padding: 8px 0 max(8px, env(safe-area-inset-bottom)) 0;
           }
           .topbar-market { display: none !important; }
@@ -3341,14 +3358,14 @@ export default function App() {
         <div style={{ position: "absolute", bottom: -200, right: -200, width: 600, height: 600, background: "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)" }} />
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, minHeight: "100vh" }}>
+      <div style={{ position: "relative", zIndex: 1, minHeight: "100vh", color: T.text }}>
 
         {/* ── SIDEBAR ── */}
         {!isMobile && <aside className="sidebar" style={{
           flexShrink: 0,
-          background: "rgba(7,11,20,0.97)",
+          background: T.sidebar,
           backdropFilter: "blur(20px)",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
+          borderRight: `1px solid ${T.border}`,
           display: "flex",
           flexDirection: "column",
           position: "fixed",
@@ -3358,11 +3375,11 @@ export default function App() {
           overflowX: "hidden",
         }}>
           {/* Logo */}
-          <div style={{ padding: "18px 12px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ padding: "18px 12px 16px", borderBottom: "1px solid var(--t-border, rgba(255,255,255,0.06))" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
               <div style={{ width: 36, height: 36, background: "linear-gradient(135deg,#3B82F6,#6366F1)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💼</div>
               <div className="sidebar-logo-text">
-                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: "#FFFFFF", whiteSpace: "nowrap", letterSpacing: "-0.2px" }}>MonPortefeuille</div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 14, color: "var(--t-text, #FFFFFF)", whiteSpace: "nowrap", letterSpacing: "-0.2px" }}>MonPortefeuille</div>
                 <div style={{ fontSize: 10, color: "#6B7280", marginTop: 1 }}>{new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
               </div>
             </div>
@@ -3371,8 +3388,8 @@ export default function App() {
             <div className="sidebar-kpi" style={{ marginTop: 14 }}>
               <div style={{ background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.25)", borderRadius: 12, padding: "12px 14px" }}>
                 <div style={{ fontSize: 10, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>Patrimoine total</div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#FFFFFF", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.5px" }}>{fmtEur(totalPatrimoine)}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "var(--t-text, #FFFFFF)", fontFamily: "'Syne', sans-serif", letterSpacing: "-0.5px" }}>{fmtEur(totalPatrimoine)}</div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--t-border, rgba(255,255,255,0.08))" }}>
                   <div>
                     <div style={{ fontSize: 10, color: "#6B7280", marginBottom: 2 }}>Bourse</div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#60A5FA" }}>{fmtEur(totalBourse)}</div>
@@ -3415,12 +3432,12 @@ export default function App() {
           </nav>
 
           {/* Footer sidebar : email + déconnexion */}
-          <div style={{ padding: "12px 6px", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ padding: "12px 6px", borderTop: "1px solid var(--t-border, rgba(255,255,255,0.06))", display: "flex", flexDirection: "column", gap: 6 }}>
             <div className="sidebar-kpi" style={{ padding: "8px 12px", marginBottom: 4 }}>
               <div style={{ fontSize: 10, color: "#4B5563", marginBottom: 2 }}>Connecté en tant que</div>
               <div style={{ fontSize: 11, color: "#6B7280", wordBreak: "break-all" }}>{user?.email}</div>
             </div>
-            <button onClick={() => { setImportBackupError(""); setBackupSuccess(""); setShowBackupModal(true); }} className="nav-btn" style={{ background: "rgba(255,255,255,0.03)", color: "#6B7280", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <button onClick={() => { setImportBackupError(""); setBackupSuccess(""); setShowBackupModal(true); }} className="nav-btn" style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", color: "#6B7280", border: "1px solid var(--t-border, rgba(255,255,255,0.08))" }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>💾</span>
               <span className="sidebar-label">Sauvegarder / Importer</span>
             </button>
@@ -3458,13 +3475,13 @@ export default function App() {
 
           {/* Topbar */}
           <div style={{
-            background: "rgba(7,11,20,0.8)", backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            background: "var(--t-sidebar, rgba(7,11,20,0.8))", backdropFilter: "blur(20px)",
+            borderBottom: "1px solid var(--t-border, rgba(255,255,255,0.06))",
             padding: "0 32px", height: 56,
             display: "flex", alignItems: "center", justifyContent: "space-between",
             position: "sticky", top: 0, zIndex: 50,
           }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 16, color: "#F9FAFB" }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 16, color: "var(--t-text, #F9FAFB)" }}>
               {NAV.find(n => n.id === tab)?.icon} {NAV.find(n => n.id === tab)?.label}
             </div>
 
@@ -3500,7 +3517,7 @@ export default function App() {
                 disabled={refreshing}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
-                  padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)",
+                  padding: "6px 12px", borderRadius: 8, border: "1px solid var(--t-border, rgba(255,255,255,0.1))",
                   background: refreshing ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.04)",
                   color: refreshing ? "#3B82F6" : "#9CA3AF",
                   cursor: refreshing ? "not-allowed" : "pointer", fontSize: 12, fontWeight: 500,
@@ -3518,7 +3535,7 @@ export default function App() {
           `}</style>
 
           <main style={{ flex: 1, padding: "clamp(16px, 4vw, 32px)" }}>
-            {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} theme={theme} setTheme={setTheme} />}
+            {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} theme={theme} setTheme={setTheme} T={T} />}
             {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} isMobile={isMobile} />}
             {tab === "transactions" && <Transactions transactions={transactions} setTransactions={setTransactions} />}
             {tab === "epargne"      && <Epargne livrets={livrets} setLivrets={setLivrets} portfolio={portfolio} />}
@@ -3536,14 +3553,14 @@ export default function App() {
       {/* Modal sauvegarde */}
       {showBackupModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowBackupModal(false)}>
-          <div style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "clamp(16px,4vw,32px)", width: 480, maxWidth: "92vw" }} onClick={e => e.stopPropagation()}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "#F9FAFB", marginBottom: 8 }}>💾 Sauvegarde des données</div>
+          <div style={{ background: "var(--t-sidebar, #111827)", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 20, padding: "clamp(16px,4vw,32px)", width: 480, maxWidth: "92vw" }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 20, fontWeight: 700, color: "var(--t-text, #F9FAFB)", marginBottom: 8 }}>💾 Sauvegarde des données</div>
             <p style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 24, lineHeight: 1.6 }}>Vos données sont stockées dans votre navigateur. Exportez-les régulièrement pour éviter toute perte.</p>
             {backupSuccess && <div style={{ background: "#10B98120", border: "1px solid #10B98140", borderRadius: 10, padding: 12, marginBottom: 16, color: "#10B981", fontSize: 14, textAlign: "center" }}>{backupSuccess}</div>}
             {importBackupError && <div style={{ background: "#EF444420", border: "1px solid #EF444440", borderRadius: 10, padding: 12, marginBottom: 16, color: "#EF4444", fontSize: 14 }}>{importBackupError}</div>}
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <button onClick={exportBackup} style={{ background: "linear-gradient(135deg,#3B82F6,#6366F1)", border: "none", borderRadius: 12, padding: "14px 20px", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>⬇️ Exporter ma sauvegarde (.json)</button>
-              <div style={{ background: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: 12, padding: "14px 20px", textAlign: "center", cursor: "pointer" }} onClick={() => backupInputRef.current?.click()}>
+              <div style={{ background: "var(--t-surface, rgba(255,255,255,0.03))", border: "1px dashed rgba(255,255,255,0.15)", borderRadius: 12, padding: "14px 20px", textAlign: "center", cursor: "pointer" }} onClick={() => backupInputRef.current?.click()}>
                 <div style={{ color: "#9CA3AF", fontSize: 14, marginBottom: 4 }}>⬆️ Restaurer depuis un fichier</div>
                 <div style={{ color: "#6B7280", fontSize: 12 }}>Cliquez pour sélectionner votre fichier .json</div>
               </div>
@@ -3552,7 +3569,7 @@ export default function App() {
             <div style={{ marginTop: 20, padding: "12px 16px", background: "#F59E0B10", border: "1px solid #F59E0B20", borderRadius: 10, fontSize: 12, color: "#F59E0B", lineHeight: 1.6 }}>
               💡 Exportez une fois par semaine et stockez dans Google Drive ou OneDrive.
             </div>
-            <button onClick={() => setShowBackupModal(false)} style={{ marginTop: 16, width: "100%", background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px", color: "#9CA3AF", cursor: "pointer", fontSize: 14 }}>Fermer</button>
+            <button onClick={() => setShowBackupModal(false)} style={{ marginTop: 16, width: "100%", background: "none", border: "1px solid var(--t-border, rgba(255,255,255,0.1))", borderRadius: 10, padding: "10px", color: "#9CA3AF", cursor: "pointer", fontSize: 14 }}>Fermer</button>
           </div>
         </div>
       )}
