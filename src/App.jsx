@@ -11,6 +11,34 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
+/* ────────────────── DONNÉES INITIALES ────────────────── */
+const INITIAL_TRANSACTIONS = [
+  { id: 1,  date: "2025-02-13", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 1,      price: 29.33,   fees: 1,    total: 30.33,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
+  { id: 2,  date: "2025-03-04", asset: "AXA",                              type: "Achat", qty: 2,      price: 37.82,   fees: 1.23, total: 76.87,       broker: "Trade Republic", assetType: "Actions",        ticker: "CS.PA"     },
+  { id: 3,  date: "2025-04-03", asset: "Engie",                            type: "Achat", qty: 2,      price: 18.51,   fees: 0.34, total: 37.36,       broker: "Trade Republic", assetType: "Actions",        ticker: "ENGI.PA"   },
+  { id: 4,  date: "2025-05-07", asset: "Renault",                          type: "Achat", qty: 1,      price: 47.72,   fees: 0.43, total: 48.15,       broker: "Trade Republic", assetType: "Actions",        ticker: "RNO.PA"    },
+  { id: 5,  date: "2025-05-07", asset: "Crédit Agricole",                  type: "Achat", qty: 1,      price: 16.79,   fees: 0.15, total: 16.94,       broker: "Trade Republic", assetType: "Actions",        ticker: "ACA.PA"    },
+  { id: 6,  date: "2025-06-25", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 1,      price: 26.29,   fees: 0.13, total: 26.42,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
+  { id: 7,  date: "2025-06-25", asset: "Drone Volt Saca",                  type: "Achat", qty: 43,     price: 0.734,   fees: 0.16, total: 31.722,      broker: "Trade Republic", assetType: "Actions",        ticker: "ALDRV.PA"  },
+  { id: 8,  date: "2025-07-04", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 2,      price: 26.65,   fees: 0.26, total: 53.56,       broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
+  { id: 9,  date: "2025-09-05", asset: "MSCI World Swap PEA EUR (Acc)",    type: "Achat", qty: 8,      price: 5.785,   fees: 0.23, total: 46.51,       broker: "Trade Republic", assetType: "ETF",            ticker: "MWRD.PA"   },
+  { id: 10, date: "2025-09-05", asset: "STOXX Europe 600 Banks EUR (Acc)", type: "Achat", qty: 3,      price: 50,      fees: 0.75, total: 150.75,      broker: "Trade Republic", assetType: "ETF",            ticker: "EXV1.DE"   },
+  { id: 11, date: "2025-09-05", asset: "MSCI EMU High Dividend EUR",       type: "Achat", qty: 1,      price: 175.48,  fees: 0.88, total: 176.36,      broker: "Trade Republic", assetType: "ETF",            ticker: "EMUD.PA"   },
+  { id: 12, date: "2025-10-14", asset: "AXA",                              type: "Achat", qty: 2,      price: 39.51,   fees: 0.72, total: 79.74,       broker: "Trade Republic", assetType: "Actions",        ticker: "CS.PA"     },
+  { id: 13, date: "2025-10-14", asset: "S&P 500 (Acc)",                    type: "Achat", qty: 4,      price: 28.756,  fees: 0.58, total: 115.604,     broker: "Trade Republic", assetType: "ETF",            ticker: "500.PA"    },
+  { id: 14, date: "2025-10-14", asset: "Crédit Agricole",                  type: "Achat", qty: 1,      price: 16.44,   fees: 0.15, total: 16.59,       broker: "Trade Republic", assetType: "Actions",        ticker: "ACA.PA"    },
+  { id: 15, date: "2025-10-14", asset: "Drone Volt Saca",                  type: "Achat", qty: 7,      price: 0.82,    fees: 0.03, total: 5.77,        broker: "Trade Republic", assetType: "Actions",        ticker: "ALDRV.PA"  },
+  { id: 16, date: "2025-12-10", asset: "Renault",                          type: "Achat", qty: 2,      price: 35.63,   fees: 0.65, total: 71.91,       broker: "Trade Republic", assetType: "Actions",        ticker: "RNO.PA"    },
+  { id: 17, date: "2025-12-10", asset: "Rexel",                            type: "Achat", qty: 4,      price: 32.97,   fees: 1.19, total: 133.07,      broker: "Trade Republic", assetType: "Actions",        ticker: "RXL.PA"    },
+  { id: 18, date: "2025-12-10", asset: "STOXX Europe 600 Banks EUR (Acc)", type: "Achat", qty: 2,      price: 56.64,   fees: 0.57, total: 113.85,      broker: "Trade Republic", assetType: "ETF",            ticker: "EXV1.DE"   },
+  { id: 19, date: "2025-12-10", asset: "MSCI World Swap PEA EUR (Acc)",    type: "Achat", qty: 10,     price: 6.102,   fees: 0.31, total: 61.33,       broker: "Trade Republic", assetType: "ETF",            ticker: "MWRD.PA"   },
+  { id: 20, date: "2026-02-05", asset: "Vinci",                            type: "Achat", qty: 1,      price: 125.5,   fees: 1.13, total: 126.63,      broker: "Trade Republic", assetType: "Actions",        ticker: "DG.PA"     },
+  { id: 21, date: "2026-02-05", asset: "Air Liquide",                      type: "Achat", qty: 1,      price: 167.78,  fees: 1.51, total: 169.29,      broker: "Trade Republic", assetType: "Actions",        ticker: "AI.PA"     },
+  { id: 22, date: "2026-02-05", asset: "Bouygues",                         type: "Achat", qty: 2,      price: 46.71,   fees: 0.84, total: 94.26,       broker: "Trade Republic", assetType: "Actions",        ticker: "EN.PA"     },
+  { id: 23, date: "2026-02-05", asset: "Banco Sabadell",                   type: "Achat", qty: 12,     price: 3.341,   fees: 0.28, total: 40.372,      broker: "Trade Republic", assetType: "Actions",        ticker: "SAB.MC"    },
+  { id: 24, date: "2024-11-11", asset: "Turismo",                          type: "Achat", qty: 4.4927, price: 111.29,  fees: 0,    total: 499.992583,  broker: "Crowd Cube",     assetType: "Private Equity", ticker: ""          },
+];
+
 /* ────────────────── PORTFOLIO CALCULÉ DEPUIS LES TRANSACTIONS ────────────────── */
 // Les transactions sont la SEULE source de vérité.
 // buildPortfolio regroupe les achats/ventes par actif et calcule le PRU (prix moyen pondéré).
@@ -168,7 +196,7 @@ function Btn({ children, variant = "primary", ...props }) {
 }
 
 /* ────────────────── TABLEAU DE BORD ────────────────── */
-function Dashboard({ portfolio, transactions, historique, depenses, revenus, livrets, objectifs }) {
+function Dashboard({ portfolio, transactions, historique, depenses, revenus, livrets, objectifs, theme = "dark", setTheme }) {
   const assets        = portfolio.map(calcAsset);
   const totalBourse   = assets.reduce((s, a) => s + a.value, 0);
   const totalInvested = assets.reduce((s, a) => s + a.invested, 0);
@@ -420,6 +448,264 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
         </div>
       </div>
 
+      {/* ── ANALYSE PAR CATÉGORIE ── */}
+      <CategoriePerfWidget assets={assets} />
+
+      {/* ── SÉLECTEUR DE THÈME ── */}
+      <ThemeSelector theme={theme} setTheme={setTheme} />
+
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WIDGET ANALYSE PAR CATÉGORIE
+══════════════════════════════════════════════════════════════ */
+const ASSET_TYPE_META = [
+  { id: "Actions",        label: "Actions",        emoji: "📈", color: "#3B82F6" },
+  { id: "ETF",            label: "ETF",            emoji: "🌍", color: "#10B981" },
+  { id: "Private Equity", label: "Private Equity", emoji: "🏢", color: "#8B5CF6" },
+  { id: "Crypto",         label: "Crypto",         emoji: "₿",  color: "#F59E0B" },
+  { id: "Obligations",    label: "Obligations",    emoji: "📄", color: "#06B6D4" },
+  { id: "Autres",         label: "Autres",         emoji: "📦", color: "#6B7280" },
+];
+
+function CategoriePerfWidget({ assets }) {
+  const available = [...new Set(assets.map(a => a.type))].filter(Boolean);
+  const [selected, setSelected] = useState(() => [...new Set(assets.map(a => a.type))].filter(Boolean));
+
+  const toggle = (type) =>
+    setSelected(s => s.includes(type) ? s.filter(x => x !== type) : [...s, type]);
+
+  const filtered    = assets.filter(a => selected.includes(a.type));
+  const totalValue  = filtered.reduce((s, a) => s + a.value, 0);
+  const totalInv    = filtered.reduce((s, a) => s + a.invested, 0);
+  const totalPnL    = totalValue - totalInv;
+  const globalPerf  = totalInv > 0 ? (totalPnL / totalInv) * 100 : 0;
+
+  const byType = ASSET_TYPE_META.map(t => {
+    const group = assets.filter(a => a.type === t.id);
+    if (group.length === 0) return null;
+    const val  = group.reduce((s, a) => s + a.value, 0);
+    const inv  = group.reduce((s, a) => s + a.invested, 0);
+    const pnl  = val - inv;
+    const perf = inv > 0 ? (pnl / inv) * 100 : 0;
+    const pct  = assets.reduce((s, a) => s + a.value, 0) > 0
+      ? (val / assets.reduce((s, a) => s + a.value, 0)) * 100 : 0;
+    return { ...t, val, inv, pnl, perf, pct, count: group.length, isSelected: selected.includes(t.id) };
+  }).filter(Boolean);
+
+  const top3   = [...filtered].sort((a, b) => b.perf - a.perf).slice(0, 3);
+  const worst3 = [...filtered].sort((a, b) => a.perf - b.perf).slice(0, 3);
+
+  const S = {
+    card: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 },
+    mini: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 12, padding: 14 },
+  };
+
+  return (
+    <div style={S.card}>
+      <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 16, fontWeight: 700, color: "#F9FAFB", marginBottom: 20 }}>
+        🔬 Analyse par catégorie
+      </div>
+
+      {/* Filtres */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+        {byType.map(t => (
+          <button key={t.id} onClick={() => toggle(t.id)} style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "7px 14px", borderRadius: 20,
+            border: `1px solid ${t.isSelected ? t.color : "rgba(255,255,255,0.1)"}`,
+            background: t.isSelected ? `${t.color}22` : "rgba(255,255,255,0.03)",
+            color: t.isSelected ? t.color : "#6B7280",
+            cursor: "pointer", fontSize: 13, fontWeight: t.isSelected ? 600 : 400,
+            transition: "all 0.15s",
+          }}>
+            {t.emoji} {t.label}
+            <span style={{ fontSize: 11, background: t.isSelected ? `${t.color}30` : "rgba(255,255,255,0.06)", padding: "1px 6px", borderRadius: 8 }}>
+              {t.count}
+            </span>
+          </button>
+        ))}
+        <button onClick={() => setSelected(available)} style={{
+          padding: "7px 14px", borderRadius: 20, fontSize: 12, cursor: "pointer",
+          border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "#4B5563",
+        }}>Tout ✓</button>
+        <button onClick={() => setSelected([])} style={{
+          padding: "7px 14px", borderRadius: 20, fontSize: 12, cursor: "pointer",
+          border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "#4B5563",
+        }}>Aucun ✗</button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: "center", color: "#6B7280", padding: "32px 0" }}>
+          Sélectionnez au moins une catégorie pour voir l'analyse
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20 }}>
+
+          {/* KPIs globaux sélection */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={S.mini}>
+              <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Valeur sélection · {filtered.length} position(s)
+              </div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "#F9FAFB", fontFamily: "'Syne', sans-serif" }}>{fmtEur(totalValue)}</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div style={S.mini}>
+                <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 4 }}>Investi</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#9CA3AF" }}>{fmtEur(totalInv)}</div>
+              </div>
+              <div style={{ ...S.mini, background: totalPnL >= 0 ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${totalPnL >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)"}` }}>
+                <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 4 }}>P&amp;L</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: totalPnL >= 0 ? "#10B981" : "#EF4444" }}>
+                  {totalPnL >= 0 ? "+" : ""}{fmtEur(totalPnL)}
+                </div>
+              </div>
+            </div>
+            <div style={{ ...S.mini, background: globalPerf >= 0 ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${globalPerf >= 0 ? "rgba(16,185,129,0.25)" : "rgba(239,68,68,0.25)"}`, textAlign: "center" }}>
+              <div style={{ fontSize: 11, color: "#6B7280", marginBottom: 6 }}>Performance globale sélection</div>
+              <div style={{ fontSize: 30, fontWeight: 800, fontFamily: "'Syne', sans-serif", color: globalPerf >= 0 ? "#10B981" : "#EF4444" }}>
+                {globalPerf >= 0 ? "+" : ""}{globalPerf.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+
+          {/* Répartition par type sélectionné */}
+          <div>
+            <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, marginBottom: 10 }}>Répartition par type</div>
+            {byType.filter(t => t.isSelected).map(t => (
+              <div key={t.id} style={{ padding: "12px 14px", background: "rgba(255,255,255,0.03)", border: `1px solid ${t.color}25`, borderRadius: 10, marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, color: "#F9FAFB", fontWeight: 600 }}>{t.emoji} {t.label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: t.perf >= 0 ? "#10B981" : "#EF4444" }}>
+                    {t.perf >= 0 ? "+" : ""}{t.perf.toFixed(2)}%
+                  </span>
+                </div>
+                <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3, marginBottom: 6 }}>
+                  <div style={{ height: "100%", width: `${Math.min(t.pct, 100)}%`, background: t.color, borderRadius: 3, transition: "width 0.5s" }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 11, color: "#6B7280" }}>{t.pct.toFixed(1)}% du portef. · {t.count} pos.</span>
+                  <span style={{ fontSize: 11, color: "#9CA3AF", fontWeight: 600 }}>{fmtEur(t.val)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Top & Worst */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, marginBottom: 8 }}>🏆 Meilleures performances</div>
+              {top3.map(a => (
+                <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.12)", borderRadius: 9, marginBottom: 6 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#F9FAFB", fontWeight: 500 }}>{a.name}</div>
+                    <div style={{ fontSize: 11, color: "#6B7280" }}>{a.type} · {fmtEur(a.value)}</div>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#10B981" }}>+{(a.perf * 100).toFixed(1)}%</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, marginBottom: 8 }}>⚠️ À surveiller</div>
+              {worst3.map(a => (
+                <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 12px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.12)", borderRadius: 9, marginBottom: 6 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#F9FAFB", fontWeight: 500 }}>{a.name}</div>
+                    <div style={{ fontSize: 11, color: "#6B7280" }}>{a.type} · {fmtEur(a.value)}</div>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: a.perf >= 0 ? "#10B981" : "#EF4444" }}>
+                    {a.perf >= 0 ? "+" : ""}{(a.perf * 100).toFixed(1)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SÉLECTEUR DE THÈME
+══════════════════════════════════════════════════════════════ */
+const THEMES = [
+  { id: "dark",   label: "Sombre",       emoji: "🌑", bg: "#070B14" },
+  { id: "night",  label: "Nuit bleue",   emoji: "🔵", bg: "#060818" },
+  { id: "light",  label: "Clair",        emoji: "☀️", bg: "#F8FAFC" },
+  { id: "rose",   label: "Rose",         emoji: "🌸", bg: "#1a0812" },
+  { id: "forest", label: "Forêt",        emoji: "🌿", bg: "#061309" },
+  { id: "sunset", label: "Coucher",      emoji: "🌅", bg: "#120800" },
+];
+
+const THEME_COLORS = {
+  dark:   { bg: "#070B14",  preview: ["#0a1020","#1e293b","#334155"] },
+  night:  { bg: "#060818",  preview: ["#0a0a28","#1e1b4b","#312e81"] },
+  light:  { bg: "#F8FAFC",  preview: ["#f1f5f9","#e2e8f0","#cbd5e1"] },
+  rose:   { bg: "#1a0812",  preview: ["#2d0a1f","#4a1232","#6b1d47"] },
+  forest: { bg: "#061309",  preview: ["#0a2010","#14532d","#166534"] },
+  sunset: { bg: "#120800",  preview: ["#1c0f00","#431407","#7c2d12"] },
+};
+
+function ThemeSelector({ theme, setTheme }) {
+  const [open, setOpen] = useState(false);
+  const current = THEMES.find(t => t.id === theme) || THEMES[0];
+
+  const apply = (t) => {
+    setTheme(t.id);
+    setOpen(false);
+  };
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        display: "flex", alignItems: "center", gap: 8, padding: "10px 16px",
+        borderRadius: 12, cursor: "pointer", fontSize: 13, fontWeight: 500,
+        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+        color: "#9CA3AF", fontFamily: "'DM Sans', sans-serif",
+      }}>
+        🎨 Thème : {current.emoji} {current.label}
+        <span style={{ fontSize: 10, opacity: 0.5 }}>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", bottom: "calc(100% + 8px)", left: 0, zIndex: 300,
+          background: "#111827", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 14, padding: 10, minWidth: 240,
+          boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+        }}>
+          <div style={{ fontSize: 11, color: "#4B5563", padding: "4px 8px 10px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Choisissez un thème
+          </div>
+          {THEMES.map(t => {
+            const cols = THEME_COLORS[t.id]?.preview || ["#1e293b","#334155","#475569"];
+            return (
+              <button key={t.id} onClick={() => apply(t)} style={{
+                width: "100%", display: "flex", alignItems: "center", gap: 12,
+                padding: "10px 12px", borderRadius: 9, border: "none", cursor: "pointer",
+                background: theme === t.id ? "rgba(59,130,246,0.15)" : "transparent",
+                color: theme === t.id ? "#60A5FA" : "#D1D5DB",
+                fontFamily: "'DM Sans', sans-serif", fontSize: 13, textAlign: "left",
+                marginBottom: 2,
+              }}>
+                {/* Aperçu couleur */}
+                <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+                  {cols.map((c, i) => (
+                    <div key={i} style={{ width: 12, height: 24, borderRadius: 4, background: c }} />
+                  ))}
+                </div>
+                <span style={{ flex: 1 }}>{t.emoji} {t.label}</span>
+                {theme === t.id && <span style={{ color: "#60A5FA", fontSize: 14 }}>✓</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -1568,12 +1854,8 @@ function Budget({ depenses, revenus, setRevenus, setDepenses }) {
             <div>
               <div style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 12, padding: 16, marginBottom: 20, fontSize: 13, color: "#93C5FD", lineHeight: 1.6 }}>
                 <strong style={{ color: "#60A5FA" }}>Comment exporter votre relevé CSV ?</strong><br />
-                • <strong>BNP / Hello Bank</strong> : Mes comptes → Télécharger → CSV<br />
-                • <strong>Crédit Agricole</strong> : Mes comptes → Exporter → CSV<br />
-                • <strong>Boursorama</strong> : Compte → Télécharger les opérations → CSV<br />
-                • <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
-                • <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
-                • <strong>La plupart des banques</strong> : cherchez "export" ou "télécharger" dans votre espace client
+                <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
+                <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
               </div>
               {importError && <div style={{ color: "#F87171", fontSize: 13, marginBottom: 12 }}>⚠️ {importError}</div>}
               <Btn onClick={() => fileInputBudgetRef.current?.click()} style={{ width: "100%" }}>📁 Choisir un fichier CSV</Btn>
@@ -1994,8 +2276,6 @@ function Depenses({ depenses, setDepenses, budgets, setBudgets, setRevenus }) {
                 • <strong>BNP / Hello Bank</strong> : Mes comptes → Télécharger → CSV<br />
                 • <strong>Crédit Agricole</strong> : Mes comptes → Exporter → CSV<br />
                 • <strong>Boursorama</strong> : Compte → Télécharger les opérations → CSV<br />
-                • <strong>LCL :</strong> Espace client → Mes comptes → Télécharger → CSV<br />
-                • <strong>Crédit Mutuel :</strong> Compte → Opérations → Exporter → CSV
                 • <strong>La plupart des banques</strong> : cherchez "export" ou "télécharger" dans votre espace client
               </div>
               {importError && (
@@ -2798,7 +3078,7 @@ export default function App() {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
   const [currentPrices, setCurrentPrices] = useState({});
   const [depenses, setDepenses] = useState([]);
   const [budgets, setBudgets]   = useState(INITIAL_BUDGETS);
@@ -2864,6 +3144,13 @@ export default function App() {
     saveToSupabase({ transactions, current_prices: currentPrices, depenses, budgets, revenus, historique, livrets, objectifs });
   }, [transactions, currentPrices, depenses, budgets, revenus, historique, livrets, objectifs]); // eslint-disable-line
 
+  // Applique le thème au body
+  useEffect(() => {
+    const THEME_BG = { dark:"#070B14", night:"#0a0a1a", light:"#F8FAFC", rose:"#1a0a12", forest:"#071409", sunset:"#150a00" };
+    document.body.style.background = THEME_BG[theme] || "#070B14";
+    localStorage.setItem("mp_theme", theme);
+  }, [theme]);
+
   // Portefeuille calculé automatiquement
   const portfolio = useMemo(() => buildPortfolio(transactions, currentPrices), [transactions, currentPrices]);
 
@@ -2886,6 +3173,7 @@ export default function App() {
 
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("mp_theme") || "dark");
   const [importBackupError, setImportBackupError] = useState("");
   const [backupSuccess, setBackupSuccess] = useState("");
   const backupInputRef = useRef(null);
@@ -3241,7 +3529,7 @@ export default function App() {
           `}</style>
 
           <main style={{ flex: 1, padding: "clamp(16px, 4vw, 32px)" }}>
-            {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} />}
+            {tab === "dashboard"    && <Dashboard portfolio={portfolio} transactions={transactions} historique={historique} depenses={depenses} revenus={revenus} livrets={livrets} objectifs={objectifs} theme={theme} setTheme={setTheme} />}
             {tab === "portfolio"    && <Portfolio portfolio={portfolio} setCurrentPrices={setCurrentPrices} refreshAll={refreshAll} refreshOne={refreshOne} loadingIds={loadingIds} errors={errors} refreshing={refreshing} lastUpdate={lastUpdate} isMobile={isMobile} />}
             {tab === "transactions" && <Transactions transactions={transactions} setTransactions={setTransactions} />}
             {tab === "epargne"      && <Epargne livrets={livrets} setLivrets={setLivrets} portfolio={portfolio} />}
