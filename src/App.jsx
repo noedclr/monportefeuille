@@ -10,6 +10,34 @@ const SUPABASE_URL      = "https://ptpiddkrnxmbxqipkzbt.supabase.co";   // ex: h
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0cGlkZGtybnhtYnhxaXBremJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNDIyNTcsImV4cCI6MjA4NzcxODI1N30.VsZacJn97476yh-n28zt-R_9OM7gpqA60PYXikmX1eQ";       // ex: eyJhbGciOiJ...
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/* ────────────────── CONSTANTES THÈME & CATÉGORIES ────────────────── */
+const ASSET_TYPE_META = [
+  { id: "Actions",        label: "Actions",        emoji: "📈", color: "#3B82F6" },
+  { id: "ETF",            label: "ETF",            emoji: "🌍", color: "#10B981" },
+  { id: "Private Equity", label: "Private Equity", emoji: "🏢", color: "#8B5CF6" },
+  { id: "Crypto",         label: "Crypto",         emoji: "₿",  color: "#F59E0B" },
+  { id: "Obligations",    label: "Obligations",    emoji: "📄", color: "#06B6D4" },
+  { id: "Autres",         label: "Autres",         emoji: "📦", color: "#6B7280" },
+];
+
+const THEMES = [
+  { id: "dark",   label: "Sombre",     emoji: "🌑", bg: "#070B14" },
+  { id: "night",  label: "Nuit bleue", emoji: "🔵", bg: "#060818" },
+  { id: "light",  label: "Clair",      emoji: "☀️", bg: "#F8FAFC" },
+  { id: "rose",   label: "Rose",       emoji: "🌸", bg: "#1a0812" },
+  { id: "forest", label: "Forêt",      emoji: "🌿", bg: "#061309" },
+  { id: "sunset", label: "Coucher",    emoji: "🌅", bg: "#120800" },
+];
+
+const THEME_COLORS = {
+  dark:   { bg: "#070B14", preview: ["#0a1020","#1e293b","#334155"] },
+  night:  { bg: "#060818", preview: ["#0a0a28","#1e1b4b","#312e81"] },
+  light:  { bg: "#F8FAFC", preview: ["#f1f5f9","#e2e8f0","#cbd5e1"] },
+  rose:   { bg: "#1a0812", preview: ["#2d0a1f","#4a1232","#6b1d47"] },
+  forest: { bg: "#061309", preview: ["#0a2010","#14532d","#166534"] },
+  sunset: { bg: "#120800", preview: ["#1c0f00","#431407","#7c2d12"] },
+};
+
 
 /* ────────────────── DONNÉES INITIALES ────────────────── */
 const INITIAL_TRANSACTIONS = [
@@ -461,15 +489,6 @@ function Dashboard({ portfolio, transactions, historique, depenses, revenus, liv
 /* ══════════════════════════════════════════════════════════════
    WIDGET ANALYSE PAR CATÉGORIE
 ══════════════════════════════════════════════════════════════ */
-const ASSET_TYPE_META = [
-  { id: "Actions",        label: "Actions",        emoji: "📈", color: "#3B82F6" },
-  { id: "ETF",            label: "ETF",            emoji: "🌍", color: "#10B981" },
-  { id: "Private Equity", label: "Private Equity", emoji: "🏢", color: "#8B5CF6" },
-  { id: "Crypto",         label: "Crypto",         emoji: "₿",  color: "#F59E0B" },
-  { id: "Obligations",    label: "Obligations",    emoji: "📄", color: "#06B6D4" },
-  { id: "Autres",         label: "Autres",         emoji: "📦", color: "#6B7280" },
-];
-
 function CategoriePerfWidget({ assets }) {
   const available = [...new Set(assets.map(a => a.type))].filter(Boolean);
   const [selected, setSelected] = useState(() => [...new Set(assets.map(a => a.type))].filter(Boolean));
@@ -633,24 +652,6 @@ function CategoriePerfWidget({ assets }) {
 /* ══════════════════════════════════════════════════════════════
    SÉLECTEUR DE THÈME
 ══════════════════════════════════════════════════════════════ */
-const THEMES = [
-  { id: "dark",   label: "Sombre",       emoji: "🌑", bg: "#070B14" },
-  { id: "night",  label: "Nuit bleue",   emoji: "🔵", bg: "#060818" },
-  { id: "light",  label: "Clair",        emoji: "☀️", bg: "#F8FAFC" },
-  { id: "rose",   label: "Rose",         emoji: "🌸", bg: "#1a0812" },
-  { id: "forest", label: "Forêt",        emoji: "🌿", bg: "#061309" },
-  { id: "sunset", label: "Coucher",      emoji: "🌅", bg: "#120800" },
-];
-
-const THEME_COLORS = {
-  dark:   { bg: "#070B14",  preview: ["#0a1020","#1e293b","#334155"] },
-  night:  { bg: "#060818",  preview: ["#0a0a28","#1e1b4b","#312e81"] },
-  light:  { bg: "#F8FAFC",  preview: ["#f1f5f9","#e2e8f0","#cbd5e1"] },
-  rose:   { bg: "#1a0812",  preview: ["#2d0a1f","#4a1232","#6b1d47"] },
-  forest: { bg: "#061309",  preview: ["#0a2010","#14532d","#166534"] },
-  sunset: { bg: "#120800",  preview: ["#1c0f00","#431407","#7c2d12"] },
-};
-
 function ThemeSelector({ theme, setTheme }) {
   const [open, setOpen] = useState(false);
   const current = THEMES.find(t => t.id === theme) || THEMES[0];
