@@ -3132,9 +3132,11 @@ export default function App() {
     saveToSupabase({ transactions, current_prices: currentPrices, depenses, budgets, revenus, historique, livrets, objectifs });
   }, [transactions, currentPrices, depenses, budgets, revenus, historique, livrets, objectifs]); // eslint-disable-line
 
+  const [theme, setTheme] = useState(() => localStorage.getItem("mp_theme") || "dark");
+
   // Applique le thème au body
   useEffect(() => {
-    const THEME_BG = { dark:"#070B14", night:"#0a0a1a", light:"#F8FAFC", rose:"#1a0a12", forest:"#071409", sunset:"#150a00" };
+    const THEME_BG = { dark:"#070B14", night:"#060818", light:"#F8FAFC", rose:"#1a0812", forest:"#061309", sunset:"#120800" };
     document.body.style.background = THEME_BG[theme] || "#070B14";
     localStorage.setItem("mp_theme", theme);
   }, [theme]);
@@ -3161,7 +3163,6 @@ export default function App() {
 
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem("mp_theme") || "dark");
   const [importBackupError, setImportBackupError] = useState("");
   const [backupSuccess, setBackupSuccess] = useState("");
   const backupInputRef = useRef(null);
